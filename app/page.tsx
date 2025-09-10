@@ -5,7 +5,9 @@ import { allReleases } from "@contentlayer";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
-  const latest = [...allReleases].sort((a, b) => +new Date(b.date as any) - +new Date(a.date as any))[0];
+  const latest = [...allReleases].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )[0];
   return (
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
