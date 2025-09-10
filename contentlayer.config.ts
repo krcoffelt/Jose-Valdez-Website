@@ -8,7 +8,7 @@ const Release = defineDocumentType(() => ({
     title: { type: "string", required: true },
     slug: { type: "string", required: true },
     date: { type: "date", required: true },
-    type: { type: "enum", options: ["single", "ep", "album"], required: true },
+    releaseType: { type: "enum", options: ["single", "ep", "album"], required: true },
     cover: { type: "string", required: true },
     platforms: { type: "json", required: false },
     tracks: { type: "json", required: true },
