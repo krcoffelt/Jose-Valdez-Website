@@ -2,7 +2,7 @@ import Section from "@/components/content/Section";
 import Link from "next/link";
 import Image from "next/image";
 import { allReleases } from "@contentlayer";
-import { motion } from "framer-motion";
+import { MotionH1 } from "@/components/ui/Motion";
 
 export default function HomePage() {
   const latest = [...allReleases].sort(
@@ -13,14 +13,7 @@ export default function HomePage() {
       {/* Hero */}
       <Section>
         <div className="mx-auto w-[min(1100px,92vw)] text-center space-y-6">
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-5xl md:text-7xl font-semibold tracking-tight"
-          >
-            JOSÉ
-          </motion.h1>
+          <MotionH1 className="text-5xl md:text-7xl font-semibold tracking-tight">JOSÉ</MotionH1>
           <p className="text-neutral-400">“Psalm 105:1–2”</p>
         </div>
       </Section>
