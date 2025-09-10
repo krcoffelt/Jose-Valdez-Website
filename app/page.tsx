@@ -1,7 +1,7 @@
 import Section from "@/components/content/Section";
 import Link from "next/link";
 import Image from "next/image";
-import { allReleases } from "contentlayer/generated";
+import { allReleases } from "@contentlayer";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
@@ -68,4 +68,3 @@ export default function HomePage() {
     </div>
   );
 }
-
