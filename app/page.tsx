@@ -19,7 +19,7 @@ export default function HomePage() {
           <div
             aria-hidden
             className="absolute inset-0 -z-10 bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/HeroImageBG')" }}
+            style={{ backgroundImage: "url('/images/Photo Sep 09 2025, 10 23 58 AM (1).jpg')" }}
           />
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
 
