@@ -8,6 +8,8 @@ export default function YouTubeEmbed({
   className,
   allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
   referrerPolicy = "strict-origin-when-cross-origin",
+  responsive = true,
+  aspect = 16 / 9,
 }: {
   src?: string;
   id?: string; // e.g. 5IsHCZmLGRY
@@ -18,9 +20,30 @@ export default function YouTubeEmbed({
   className?: string;
   allow?: string;
   referrerPolicy?: string;
+  responsive?: boolean;
+  aspect?: number; // width/height, default 16/9
 }) {
   const embedSrc = src || (id ? `https://www.youtube.com/embed/${id}${params ? `?${params}` : ""}` : undefined);
   if (!embedSrc) return null;
+  if (responsive) {
+    return (
+      <div
+        className={className}
+        style={{ position: "relative", aspectRatio: String(aspect), overflow: "hidden" }}
+      >
+        <iframe
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          src={embedSrc}
+          title={title}
+          frameBorder={0}
+          allow={allow}
+          referrerPolicy={referrerPolicy}
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+    );
+  }
   return (
     <iframe
       className={className}
@@ -36,4 +59,3 @@ export default function YouTubeEmbed({
     />
   );
 }
-

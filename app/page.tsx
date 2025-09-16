@@ -49,8 +49,12 @@ export default function HomePage() {
         <div className="mx-auto w-[min(1100px,92vw)]">
           <h3 className="text-2xl mb-4">Featured Video</h3>
           {featured && (
-            <div className="max-w-[660px] rounded-2xl overflow-hidden">
-              <YouTubeEmbed src={featured.url} height={315} width="100%" />
+            <div className="max-w-[860px]">
+              <YouTubeEmbed
+                src={featured.url}
+                className="rounded-2xl"
+                responsive
+              />
             </div>
           )}
         </div>
