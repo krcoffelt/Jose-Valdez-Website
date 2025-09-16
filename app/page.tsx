@@ -21,7 +21,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-[1400px] relative">
             <UnicornStudioEmbed projectId="iVXTIfZoqklHj97GYjkR" />
             <p className="absolute left-1/2 -translate-x-1/2 bottom-[12%] md:bottom-[16%] text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
-              “Psalm 105:1–2”
+              Psalm 105:1–2
             </p>
           </div>
         </ParallaxHero>
