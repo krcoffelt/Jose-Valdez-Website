@@ -3,14 +3,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { allReleases } from "@contentlayer";
 import { MotionH1 } from "@/components/ui/Motion";
-import AppleMusicEmbed from "@/components/embeds/AppleMusicEmbed";
-import { appleMusicVideos } from "@/data/embeds/apple-music-videos";
+import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
+import { youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
 
 export default function HomePage() {
   const latest = [...allReleases].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )[0];
-  const featured = appleMusicVideos.find(v => v.url.includes("house-of-the-lord")) || appleMusicVideos[0];
+  const featured = youtubeMusicVideos.find(v => v.url.includes("5IsHCZmLGRY")) || youtubeMusicVideos[0];
   return (
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
@@ -50,7 +50,7 @@ export default function HomePage() {
           <h3 className="text-2xl mb-4">Featured Video</h3>
           {featured && (
             <div className="max-w-[660px] rounded-2xl overflow-hidden">
-              <AppleMusicEmbed url={featured.url} height={371} />
+              <YouTubeEmbed src={featured.url} height={315} width="100%" />
             </div>
           )}
         </div>
