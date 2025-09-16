@@ -23,7 +23,7 @@ export default function ParallaxHero({
   const y = useTransform(scrollYProgress, [0, 1], [0, -strength]);
 
   return (
-    <div ref={ref} className={`relative w-full h-full overflow-hidden ${className ?? ""}`}>
+    <div ref={ref} className={`relative min-h-[100svh] w-full overflow-hidden flex items-center ${className ?? ""}`}>
       {/* Background with parallax */}
       <motion.div
         aria-hidden
@@ -42,4 +42,3 @@ export default function ParallaxHero({
     </div>
   );
 }
-
