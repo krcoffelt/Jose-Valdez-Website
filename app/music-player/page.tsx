@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
 import * as Slider from "@radix-ui/react-slider";
+import { SkipBack, SkipForward, Play, Pause } from "lucide-react";
 import { allReleases } from "@contentlayer";
 import { useAudio } from "@/components/audio/AudioProvider";
 
@@ -116,13 +117,21 @@ export default function MusicPlayerDemo() {
             <span className="text-xs text-neutral-400 w-10">{formatTime(a.duration)}</span>
           </div>
           <div className="flex items-center justify-center gap-4">
-            <button onClick={a.prev} aria-label="Previous" className="h-12 w-12 rounded-full bg-white/10">⏮️</button>
+            <button onClick={a.prev} aria-label="Previous" className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center">
+              <SkipBack className="h-5 w-5 text-white" />
+            </button>
             {a.playing ? (
-              <button onClick={a.pause} aria-label="Pause" className="h-16 w-16 rounded-full bg-white text-black font-bold">⏸️</button>
+              <button onClick={a.pause} aria-label="Pause" className="h-16 w-16 rounded-full bg-white text-black flex items-center justify-center">
+                <Pause className="h-7 w-7" />
+              </button>
             ) : (
-              <button onClick={() => a.play()} aria-label="Play" className="h-16 w-16 rounded-full bg-white text-black font-bold">▶️</button>
+              <button onClick={() => a.play()} aria-label="Play" className="h-16 w-16 rounded-full bg-white text-black flex items-center justify-center">
+                <Play className="h-7 w-7" />
+              </button>
             )}
-            <button onClick={a.next} aria-label="Next" className="h-12 w-12 rounded-full bg-white/10">⏭️</button>
+            <button onClick={a.next} aria-label="Next" className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center">
+              <SkipForward className="h-5 w-5 text-white" />
+            </button>
           </div>
         </div>
       </div>
