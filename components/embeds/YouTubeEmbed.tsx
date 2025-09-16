@@ -1,3 +1,5 @@
+import type { HTMLAttributeReferrerPolicy } from "react";
+
 export default function YouTubeEmbed({
   src,
   id,
@@ -19,7 +21,7 @@ export default function YouTubeEmbed({
   height?: number | string;
   className?: string;
   allow?: string;
-  referrerPolicy?: string;
+  referrerPolicy?: HTMLAttributeReferrerPolicy;
   responsive?: boolean;
   aspect?: number; // width/height, default 16/9
 }) {
