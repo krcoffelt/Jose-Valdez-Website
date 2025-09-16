@@ -6,6 +6,7 @@ import { MotionH1 } from "@/components/ui/Motion";
 import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
 import { youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
 import ParallaxHero from "@/components/hero/ParallaxHero";
+import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
 
 export default function HomePage() {
   const latest = [...allReleases].sort(
@@ -17,7 +18,9 @@ export default function HomePage() {
       {/* Hero */}
       <Section>
         <ParallaxHero bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png" strength={140}>
-          <MotionH1 className="text-8xl md:text-9xl font-semibold tracking-tight">JOSÉ</MotionH1>
+          <div className="mx-auto max-w-[1400px]">
+            <UnicornStudioEmbed projectId="iVXTIfZoqklHj97GYjkR" />
+          </div>
           <p className="text-neutral-300 text-3xl md:text-4xl">“Psalm 105:1–2”</p>
         </ParallaxHero>
       </Section>
