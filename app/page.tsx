@@ -5,6 +5,7 @@ import { allReleases } from "@contentlayer";
 import { MotionH1 } from "@/components/ui/Motion";
 import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
 import { youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
+import ParallaxHero from "@/components/hero/ParallaxHero";
 
 export default function HomePage() {
   const latest = [...allReleases].sort(
@@ -15,20 +16,10 @@ export default function HomePage() {
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
       <Section>
-        {/* Background image, sized to full section */}
-        <div
-          aria-hidden
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/Photo Sep 09 2025, 10 23 58 AM (1).jpg')" }}
-        />
-        {/* Dark overlay above image */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
-
-        {/* Foreground content */}
-          <div className="relative z-20 mx-auto w-[min(1100px,92vw)] text-center space-y-8 py-16 md:py-24">
+        <ParallaxHero bgSrc="/images/Photo Sep 09 2025, 10 23 58 AM (1).jpg" strength={140}>
           <MotionH1 className="text-8xl md:text-9xl font-semibold tracking-tight">JOSÉ</MotionH1>
           <p className="text-neutral-300 text-3xl md:text-4xl">“Psalm 105:1–2”</p>
-          </div>
+        </ParallaxHero>
       </Section>
 
       {/* Latest Release */}
