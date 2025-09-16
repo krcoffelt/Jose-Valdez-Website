@@ -46,12 +46,13 @@ export default function HomePage() {
 
       {/* Featured Video */}
       <Section>
-        <div className="mx-auto w-[min(1100px,92vw)]">
-          <h3 className="text-2xl mb-4">Featured Video</h3>
+        <div className="mx-auto w-[min(1100px,92vw)] text-center">
+          <h3 className="text-2xl mb-4">House of The Lord - Hillsong Young &amp; Free</h3>
           {featured && (
-            <div className="max-w-[860px]">
+            <div className="max-w-[860px] mx-auto">
               <YouTubeEmbed
                 src={featured.url}
+                title="House of The Lord - Hillsong Young & Free"
                 className="rounded-2xl"
                 responsive
               />
