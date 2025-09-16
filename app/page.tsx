@@ -15,9 +15,18 @@ export default function HomePage() {
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
       <Section>
-        <div className="mx-auto w-[min(1100px,92vw)] text-center space-y-6">
-          <MotionH1 className="text-5xl md:text-7xl font-semibold tracking-tight">JOSÉ</MotionH1>
-          <p className="text-neutral-400">“Psalm 105:1–2”</p>
+        <div className="relative w-full h-full">
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-cover bg-center"
+            style={{ backgroundImage: "url('/images/HeroImageBG')" }}
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
+
+          <div className="mx-auto w-[min(1100px,92vw)] text-center space-y-6">
+            <MotionH1 className="text-5xl md:text-7xl font-semibold tracking-tight">JOSÉ</MotionH1>
+            <p className="text-neutral-300">“Psalm 105:1–2”</p>
+          </div>
         </div>
       </Section>
 
