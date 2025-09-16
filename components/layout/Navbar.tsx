@@ -11,9 +11,9 @@ export default function Navbar() {
           <Link href="/videos">Videos</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/links">Links</Link>
+          <Link href="/test-portfolio">Test Portfolio</Link>
         </div>
       </nav>
     </header>
   );
 }
-
