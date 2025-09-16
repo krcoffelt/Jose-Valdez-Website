@@ -18,10 +18,12 @@ export default function HomePage() {
       {/* Hero */}
       <Section>
         <ParallaxHero bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png" strength={140}>
-          <div className="mx-auto max-w-[1400px]">
+          <div className="mx-auto max-w-[1400px] relative">
             <UnicornStudioEmbed projectId="iVXTIfZoqklHj97GYjkR" />
+            <p className="absolute left-1/2 -translate-x-1/2 bottom-[4%] md:bottom-[6%] text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
+              “Psalm 105:1–2”
+            </p>
           </div>
-          <p className="text-neutral-300 text-3xl md:text-4xl leading-tight -mt-8 md:-mt-12 pointer-events-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">“Psalm 105:1–2”</p>
         </ParallaxHero>
       </Section>
 
