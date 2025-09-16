@@ -16,7 +16,7 @@ export default function HomePage() {
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
       <Section>
-        <ParallaxHero bgSrc="/images/Photo Sep 09 2025, 10 23 58 AM (1).jpg" strength={140}>
+        <ParallaxHero bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png" strength={140}>
           <MotionH1 className="text-8xl md:text-9xl font-semibold tracking-tight">JOSÉ</MotionH1>
           <p className="text-neutral-300 text-3xl md:text-4xl">“Psalm 105:1–2”</p>
         </ParallaxHero>
