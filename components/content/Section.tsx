@@ -1,4 +1,3 @@
 export default function Section({ children }: { children: React.ReactNode }) {
-  return <section className="snap-section flex items-center">{children}</section>;
+  return <section className="relative snap-section flex items-center">{children}</section>;
 }
-

@@ -15,21 +15,19 @@ export default function HomePage() {
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
       <Section>
-        <div className="relative w-full h-full">
-          {/* Background image */}
-          <div
-            aria-hidden
-            className="absolute inset-0 z-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/Photo Sep 09 2025, 10 23 58 AM (1).jpg')" }}
-          />
-          {/* Dark overlay above image */}
-          <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
+        {/* Background image, sized to full section */}
+        <div
+          aria-hidden
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/Photo Sep 09 2025, 10 23 58 AM (1).jpg')" }}
+        />
+        {/* Dark overlay above image */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
 
-          {/* Foreground content */}
-          <div className="relative z-20 mx-auto w-[min(1100px,92vw)] text-center space-y-6">
-            <MotionH1 className="text-5xl md:text-7xl font-semibold tracking-tight">JOSÉ</MotionH1>
-            <p className="text-neutral-300">“Psalm 105:1–2”</p>
-          </div>
+        {/* Foreground content */}
+        <div className="relative z-20 mx-auto w-[min(1100px,92vw)] text-center space-y-6 py-16 md:py-24">
+          <MotionH1 className="text-5xl md:text-7xl font-semibold tracking-tight">JOSÉ</MotionH1>
+          <p className="text-neutral-300">“Psalm 105:1–2”</p>
         </div>
       </Section>
 
