@@ -3,11 +3,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { allReleases } from "@contentlayer";
 import { MotionH1 } from "@/components/ui/Motion";
+import AppleMusicEmbed from "@/components/embeds/AppleMusicEmbed";
+import { appleMusicVideos } from "@/data/embeds/apple-music-videos";
 
 export default function HomePage() {
   const latest = [...allReleases].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )[0];
+  const featured = appleMusicVideos.find(v => v.url.includes("house-of-the-lord")) || appleMusicVideos[0];
   return (
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
@@ -45,7 +48,11 @@ export default function HomePage() {
       <Section>
         <div className="mx-auto w-[min(1100px,92vw)]">
           <h3 className="text-2xl mb-4">Featured Video</h3>
-          {/* Add <VideoLightEmbed id="..."/> once you pick the video */}
+          {featured && (
+            <div className="max-w-[660px] rounded-2xl overflow-hidden">
+              <AppleMusicEmbed url={featured.url} height={371} />
+            </div>
+          )}
         </div>
       </Section>
 

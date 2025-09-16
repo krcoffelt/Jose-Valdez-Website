@@ -27,10 +27,9 @@ export default function AppleMusicEmbed({
       frameBorder="0"
       height={height}
       style={{ width: "100%", overflow: "hidden", background: "transparent" }}
-      sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+      sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
       src={src}
       loading="lazy"
     />
   );
 }
-

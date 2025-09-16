@@ -7,10 +7,9 @@ export type AppleMusicVideo = {
 
 export const appleMusicVideos: AppleMusicVideo[] = [
   {
-    title: "Glasshouse (Official Video)",
+    title: "House of the Lord (Live)",
     artist: "JOSÉ",
-    url: "https://music.apple.com/us/music-video/xxxxxxxx",
-    note: "Paste the Apple Music video share URL.",
+    url: "https://music.apple.com/us/music-video/house-of-the-lord-live/1829811253",
+    note: "Apple Music video embed for homepage featured slot.",
   },
 ];
-
