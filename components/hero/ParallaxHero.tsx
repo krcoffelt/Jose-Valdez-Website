@@ -36,7 +36,7 @@ export default function ParallaxHero({
       )}
 
       {/* Foreground content */}
-      <div className="relative z-20 mx-auto w-[min(1400px,96vw)] text-center space-y-6 pt-8 md:pt-12 pb-16 md:pb-20">
+      <div className="relative z-20 mx-auto w-[min(1400px,96vw)] text-center space-y-2 md:space-y-4 pt-2 md:pt-6 pb-14 md:pb-20">
         {children}
       </div>
     </div>
