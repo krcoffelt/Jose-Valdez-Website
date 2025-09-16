@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
+import * as Slider from "@radix-ui/react-slider";
 import { allReleases } from "@contentlayer";
 import { useAudio } from "@/components/audio/AudioProvider";
 
@@ -50,9 +51,10 @@ export default function MusicPlayerDemo() {
   return (
     <div className="mx-auto w-[min(1200px,95vw)] py-8">
       <div className="rounded-2xl bg-surface/80 backdrop-blur border border-white/10 shadow-soft p-6">
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr),340px] items-start">
-          {/* Artwork / Video placeholder */}
-          <div className="aspect-square rounded-2xl overflow-hidden bg-black/40">
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr),360px] items-start">
+          {/* Artwork / Video area */}
+          <div>
+            <div className="aspect-video rounded-2xl overflow-hidden bg-black/40">
             <Image
               src={current?.cover || "/images/placeholder.svg"}
               alt={current?.title || "Artwork"}
@@ -61,6 +63,11 @@ export default function MusicPlayerDemo() {
               className="h-full w-full object-cover"
               priority
             />
+            </div>
+            <div className="mt-4">
+              <div className="text-2xl font-semibold">{current?.title ?? "—"}</div>
+              <div className="text-neutral-400 uppercase tracking-wide">{current?.artist ?? "JOSÉ"}</div>
+            </div>
           </div>
 
           {/* Queue */}
@@ -89,37 +96,36 @@ export default function MusicPlayerDemo() {
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="mt-6">
+        {/* Scrubber + Controls */}
+        <div className="mt-6 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <input
-                type="range"
-                min={0}
-                max={a.duration || 0}
-                step={1}
-                value={a.time}
-                onChange={(e) => a.seek(Number(e.currentTarget.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-neutral-400 mt-1">
-                <span>{formatTime(a.time)}</span>
-                <span>{formatTime(a.duration)}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button onClick={a.prev} aria-label="Previous" className="h-12 w-12 rounded-full bg-white/10">⏮️</button>
-              {a.playing ? (
-                <button onClick={a.pause} aria-label="Pause" className="h-14 w-14 rounded-full bg-white text-black font-bold">⏸️</button>
-              ) : (
-                <button onClick={() => a.play()} aria-label="Play" className="h-14 w-14 rounded-full bg-white text-black font-bold">▶️</button>
-              )}
-              <button onClick={a.next} aria-label="Next" className="h-12 w-12 rounded-full bg-white/10">⏭️</button>
-            </div>
+            <span className="text-xs text-neutral-400 w-10 text-right">{formatTime(a.time)}</span>
+            <Slider.Root
+              className="relative flex-1 h-4 select-none touch-none"
+              value={[a.time]}
+              max={a.duration || 0}
+              step={1}
+              onValueChange={(v) => a.seek(v[0] ?? 0)}
+              aria-label="Seek"
+            >
+              <Slider.Track className="bg-white/15 relative grow rounded-full h-1">
+                <Slider.Range className="absolute h-1 rounded-full bg-white" />
+              </Slider.Track>
+              <Slider.Thumb className="block h-3 w-3 rounded-full bg-white shadow" />
+            </Slider.Root>
+            <span className="text-xs text-neutral-400 w-10">{formatTime(a.duration)}</span>
+          </div>
+          <div className="flex items-center justify-center gap-4">
+            <button onClick={a.prev} aria-label="Previous" className="h-12 w-12 rounded-full bg-white/10">⏮️</button>
+            {a.playing ? (
+              <button onClick={a.pause} aria-label="Pause" className="h-16 w-16 rounded-full bg-white text-black font-bold">⏸️</button>
+            ) : (
+              <button onClick={() => a.play()} aria-label="Play" className="h-16 w-16 rounded-full bg-white text-black font-bold">▶️</button>
+            )}
+            <button onClick={a.next} aria-label="Next" className="h-12 w-12 rounded-full bg-white/10">⏭️</button>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
