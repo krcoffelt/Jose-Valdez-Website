@@ -25,10 +25,10 @@ export default function HomePage() {
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
 
         {/* Foreground content */}
-        <div className="relative z-20 mx-auto w-[min(1100px,92vw)] text-center space-y-6 py-16 md:py-24">
-          <MotionH1 className="text-5xl md:text-7xl font-semibold tracking-tight">JOSÉ</MotionH1>
-          <p className="text-neutral-300">“Psalm 105:1–2”</p>
-        </div>
+          <div className="relative z-20 mx-auto w-[min(1100px,92vw)] text-center space-y-8 py-16 md:py-24">
+          <MotionH1 className="text-8xl md:text-9xl font-semibold tracking-tight">JOSÉ</MotionH1>
+          <p className="text-neutral-300 text-3xl md:text-4xl">“Psalm 105:1–2”</p>
+          </div>
       </Section>
 
       {/* Latest Release */}
