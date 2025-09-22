@@ -83,7 +83,7 @@ function PlayerDock() {
   const a = useAudio();
   if (!a.current) return null;
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[min(900px,92vw)] rounded-2xl bg-surface/80 backdrop-blur px-4 py-3 shadow-soft border border-white/5">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[min(900px,92vw)] rounded-2xl bg-surface/80 backdrop-blur px-4 py-3 shadow-soft border border-white/5 mb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center gap-4">
         <button onClick={a.prev} aria-label="Previous" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
           <SkipBack className="h-4 w-4 text-white" />

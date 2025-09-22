@@ -21,6 +21,7 @@ export default function HomePage() {
       title: t.title ?? r.title,
       artist: t.artist ?? undefined,
       cover,
+      date: (r as any).date as any,
       platforms: (r as any).platforms ?? null,
     }));
   });
@@ -32,10 +33,14 @@ export default function HomePage() {
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
       <Section>
-        <ParallaxHero bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png" strength={140}>
+        <ParallaxHero
+          bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png"
+          strength={140}
+          className="items-center md:items-start"
+        >
           <div className="mx-auto max-w-[1400px] relative">
             <UnicornStudioEmbed projectId="iVXTIfZoqklHj97GYjkR" />
-            <p className="absolute left-1/2 -translate-x-1/2 bottom-[12%] md:bottom-[16%] text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
+            <p className="md:absolute md:left-1/2 md:-translate-x-1/2 md:bottom-[16%] text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
               Psalm 105:1–2
             </p>
           </div>
@@ -76,9 +81,17 @@ export default function HomePage() {
         <div className="mx-auto w-[min(800px,92vw)] text-center space-y-4">
           <h3 className="text-2xl">Get updates</h3>
           <p className="text-neutral-400">Be first to hear new music.</p>
-          <form className="flex gap-2 justify-center">
-            <input className="px-3 py-2 rounded-xl bg-surface" placeholder="your@email.com" />
-            <button className="px-4 py-2 rounded-xl bg-gold text-black">Subscribe</button>
+          <form className="flex flex-col sm:flex-row gap-2 justify-center items-stretch sm:items-center">
+            <input
+              type="email"
+              name="email"
+              aria-label="Email address"
+              className="px-3 py-2 rounded-xl bg-surface w-full sm:w-[340px]"
+              placeholder="your@email.com"
+              inputMode="email"
+              autoComplete="email"
+            />
+            <button type="submit" className="px-4 py-2 rounded-xl bg-gold text-black w-full sm:w-auto">Subscribe</button>
           </form>
         </div>
       </Section>

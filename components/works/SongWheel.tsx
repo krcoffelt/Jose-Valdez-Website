@@ -7,6 +7,7 @@ export type SongItem = {
   title: string;
   artist?: string;
   cover: string;
+  date?: string; // ISO string (Release date)
   platforms?: { apple?: string; spotify?: string } | null;
 };
 
@@ -29,9 +30,16 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     if (children.length >= 2) {
       const s = children[1].offsetLeft - children[0].offsetLeft;
       setStep(s);
-      const blockOffset = s * items.length * Math.floor(LOOP / 2);
-      rail.scrollLeft = blockOffset;
-      setMid(rail.scrollLeft + rail.clientWidth / 2);
+      // Center on the first item in the middle block so that
+      // start is Song 1 with neighbors 10 and 2 visible.
+      const startIndex = items.length * Math.floor(LOOP / 2);
+      const el = children[startIndex];
+      if (el) {
+        const target = el.offsetLeft + el.clientWidth / 2 - rail.clientWidth / 2;
+        rail.scrollLeft = target;
+        setMid(target + rail.clientWidth / 2);
+        setActive(startIndex);
+      }
     }
   }, [items.length]);
 
@@ -88,9 +96,15 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     const el = rail?.children?.[i] as HTMLElement | undefined;
     if (!rail || !el) return;
     const target = el.offsetLeft + el.clientWidth / 2 - rail.clientWidth / 2;
-    rail.scrollTo({ left: target, behavior: "smooth" });
-    // Flip shortly after centering scroll begins
-    window.setTimeout(() => setFlipped((prev) => (prev === i ? null : i)), 320);
+    const alreadyCentered = Math.abs(rail.scrollLeft - target) < 2;
+    if (!alreadyCentered) {
+      rail.scrollTo({ left: target, behavior: "smooth" });
+      // Slight delay before flipping if it wasn't centered
+      window.setTimeout(() => setFlipped((prev) => (prev === i ? null : i)), 320);
+    } else {
+      // Flip immediately if already centered
+      setFlipped((prev) => (prev === i ? null : i));
+    }
   }
 
   return (
@@ -101,7 +115,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
       <div
         ref={railRef}
-        className="relative flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
+        className="relative mx-auto w-[352px] md:w-[432px] flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
       >
         {extended.map((it, i) => {
           // Scale based on distance from the viewport center for subtle wheel depth
@@ -120,25 +134,25 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                 className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
                 }`}
-                style={{ transform: `scale(${isActive ? scale * 1.06 : scale}) rotateY(${flipped === i ? 180 : 0}deg)` }}
+                style={{ transform: `scale(${isActive ? Math.min(1.12, scale * 1.08) : scale}) rotateY(${flipped === i ? 180 : 0}deg)` }}
                 aria-label={`Open ${it.title}`}
               >
                 {/* Front */}
                 <div className="absolute inset-0 [backface-visibility:hidden]">
                   <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" unoptimized />
-                <div className="absolute right-2 bottom-2 left-auto pointer-events-none text-right">
-                  <div className="bg-black rounded-md px-2 py-1 inline-block max-w-[90%]">
-                    <div className="text-white text-sm font-medium truncate">{it.title}</div>
-                    {it.artist && <div className="text-white/80 text-xs truncate">{it.artist}</div>}
+                  <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
+                    <div className="text-white text-sm font-semibold leading-tight truncate">{it.title}</div>
+                    {it.artist && <div className="text-white/90 text-xs truncate">{it.artist}</div>}
                   </div>
-                </div>
                 </div>
                 {/* Back */}
                 <div className="absolute inset-0 rotate-y-180 [backface-visibility:hidden] bg-white text-black border border-black/10 p-3 flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs text-neutral-600">Track</div>
-                    <div className="text-sm font-medium leading-tight line-clamp-2">{it.title}</div>
-                    {it.artist && <div className="text-xs text-neutral-700 mt-1">{it.artist}</div>}
+                  <div className="space-y-1">
+                    <div className="text-base font-semibold leading-tight line-clamp-2">{it.title}</div>
+                    {it.artist && <div className="text-sm text-neutral-700">{it.artist}</div>}
+                    {it.date && (
+                      <div className="text-xs text-neutral-600">Release Date: {new Date(it.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</div>
+                    )}
                   </div>
                   <div className="flex gap-2 pt-2">
                     {it.platforms?.apple && (
