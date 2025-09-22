@@ -125,7 +125,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
       <div
         ref={railRef}
-        className="relative mx-auto w-[392px] md:w-[432px] lg:w-[1024px] flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
+        className="relative mx-auto w-[380px] md:w-[432px] lg:w-[1024px] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-8 md:py-4 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
       >
         {extended.map((it, i) => {
           const isActive = i === active;
@@ -133,7 +133,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           return (
             <div
               key={it.id}
-              className="snap-center shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
+              className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
               <button
                 onClick={() => centerAndFlip(i)}
