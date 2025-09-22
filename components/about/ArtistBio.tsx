@@ -1,31 +1,14 @@
-import Image from "next/image";
-
 export default function ArtistBio() {
   return (
     <div className="mx-auto w-[min(1200px,94vw)]">
       <div className="rounded-2xl bg-surface/80 border border-white/10 shadow-soft overflow-hidden">
-        <div className="grid md:grid-cols-2">
-          {/* Portrait */}
-          <div className="relative aspect-[4/5] md:h-full">
-            <Image
-              src="https://rlefyrqefcxiifzggwpi.supabase.co/storage/v1/object/public/Photos/Screenshot%202025-09-22%20at%2012.05.40%20PM.png"
-              alt="Jose Valdez"
-              fill
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover"
-              priority
-            />
-          </div>
-
-          {/* Copy */}
-          <div className="p-6 md:p-10 flex flex-col justify-center">
-            <div className="h-1 w-12 bg-gold rounded-full mb-6" />
-            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">About José</h2>
-            <p className="text-neutral-300 text-lg md:text-xl leading-relaxed whitespace-pre-line">
-              {`Jose Valdez is an emerging artist blending authentic storytelling with creative collaborations. His music captures personal experiences and emotions, connecting with listeners across Spotify, Apple Music, and beyond.
-He has been a part of projects with Hillsong Young & Free and more well known artists.`}
+        <div className="p-6 md:p-10">
+          <blockquote className="mx-auto max-w-[1000px] text-neutral-200 text-base md:text-xl leading-relaxed">
+            <p>
+              “Music is the only thing I’ve ever been good at that I could use to shed light. It’s my purpose. I don’t see a line between Christian and secular — I just want to use the gifts God gave me and do it to the best of my ability. My music is my offering, my worship. If it reaches someone, that’s amazing. If it changes a life, even better. And if people hate it, that’s okay too — it’s not for them. It’s for Him. The message I want to share is simple: you’re never too far away, we can never outrun His grace.”
             </p>
-          </div>
+            <footer className="mt-4 text-neutral-400 text-sm md:text-base text-right">— José Valdez</footer>
+          </blockquote>
         </div>
       </div>
     </div>
