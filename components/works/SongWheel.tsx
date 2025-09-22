@@ -133,20 +133,20 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                   </div>
                 </div>
                 {/* Back */}
-                <div className="absolute inset-0 rotate-y-180 [backface-visibility:hidden] bg-surface/95 border border-white/10 p-3 flex flex-col justify-between">
+                <div className="absolute inset-0 rotate-y-180 [backface-visibility:hidden] bg-white text-black border border-black/10 p-3 flex flex-col justify-between">
                   <div>
-                    <div className="text-xs text-neutral-400">Track</div>
+                    <div className="text-xs text-neutral-600">Track</div>
                     <div className="text-sm font-medium leading-tight line-clamp-2">{it.title}</div>
-                    {it.artist && <div className="text-xs text-neutral-500 mt-1">{it.artist}</div>}
+                    {it.artist && <div className="text-xs text-neutral-700 mt-1">{it.artist}</div>}
                   </div>
                   <div className="flex gap-2 pt-2">
                     {it.platforms?.apple && (
-                      <a className="px-2.5 py-1.5 rounded-lg bg-white text-black text-xs" href={it.platforms.apple} target="_blank" rel="noreferrer">
+                      <a className="px-2.5 py-1.5 rounded-lg bg-black text-white text-xs" href={it.platforms.apple} target="_blank" rel="noreferrer">
                         Apple Music
                       </a>
                     )}
                     {it.platforms?.spotify && (
-                      <a className="px-2.5 py-1.5 rounded-lg bg-white/10 text-xs" href={it.platforms.spotify} target="_blank" rel="noreferrer">
+                      <a className="px-2.5 py-1.5 rounded-lg bg-black text-white text-xs" href={it.platforms.spotify} target="_blank" rel="noreferrer">
                         Spotify
                       </a>
                     )}
