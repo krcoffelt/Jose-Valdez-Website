@@ -77,11 +77,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     };
   }, [items.length, step]);
 
-  function scrollBy(dir: 1 | -1) {
-    const rail = railRef.current;
-    if (!rail) return;
-    rail.scrollBy({ left: dir * (rail.clientWidth * 0.5), behavior: "smooth" });
-  }
+  // Scroll is trackpad/mouse/touch only; arrows removed per design
 
   if (!items.length) return null;
 
@@ -89,15 +85,11 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     <div className="mx-auto w-[min(1100px,92vw)]">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-3xl font-semibold">Music Portfolio</h2>
-        <div className="flex gap-2">
-          <button onClick={() => scrollBy(-1)} className="px-3 py-1.5 rounded-xl bg-white/10">‹</button>
-          <button onClick={() => scrollBy(1)} className="px-3 py-1.5 rounded-xl bg-white/10">›</button>
-        </div>
       </div>
 
       <div
         ref={railRef}
-        className="relative flex gap-4 overflow-x-auto py-4 scrollbar-thin perspective"
+        className="relative flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
       >
         {extended.map((it, i) => {
           // Scale based on distance from the viewport center for subtle wheel depth
@@ -132,6 +124,8 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       </div>
       <style jsx>{`
         .perspective { perspective: 1200px; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
       `}</style>
     </div>
   );
