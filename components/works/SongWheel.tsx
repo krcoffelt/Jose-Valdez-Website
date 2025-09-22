@@ -125,7 +125,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
       <div
         ref={railRef}
-        className="relative mx-auto w-[380px] md:w-[432px] lg:w-[1024px] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-8 md:py-4 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
+        className="relative mx-auto w-[min(380px,92vw)] md:w-[432px] lg:w-[1024px] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-8 md:py-4 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
       >
         {extended.map((it, i) => {
           const isActive = i === active;
