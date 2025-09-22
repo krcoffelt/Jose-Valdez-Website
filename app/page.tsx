@@ -6,9 +6,22 @@ import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
 import { youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
 import ParallaxHero from "@/components/hero/ParallaxHero";
 import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
+import SongWheel from "@/components/works/SongWheel";
+import { allReleases } from "@contentlayer";
 
 export default function HomePage() {
   const featured = youtubeMusicVideos.find(v => v.url.includes("5IsHCZmLGRY")) || youtubeMusicVideos[0];
+  const releases = [...allReleases].sort((a, b) => +new Date(b.date) - +new Date(a.date));
+  const wheelItems = releases.flatMap(r => {
+    const cover = r.cover || "/images/placeholder.svg";
+    const list = (r.tracks as any[]) || [];
+    return list.map((t: any, i: number) => ({
+      id: `${r.slug}-${t.slug ?? i}`,
+      title: t.title ?? r.title,
+      cover,
+      platforms: (r as any).platforms ?? null,
+    }));
+  });
   return (
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
@@ -27,6 +40,13 @@ export default function HomePage() {
       <Section>
         <ArtistBio />
       </Section>
+
+      {/* Music Portfolio — Song Wheel */}
+      {wheelItems.length > 0 && (
+        <Section>
+          <SongWheel items={wheelItems} />
+        </Section>
+      )}
 
       {/* Featured Video */}
       <Section>
