@@ -1,7 +1,6 @@
 import Section from "@/components/content/Section";
-import Link from "next/link";
-import Image from "next/image";
-import { allReleases } from "@contentlayer";
+// import Link from "next/link";
+import ArtistBio from "@/components/about/ArtistBio";
 import { MotionH1 } from "@/components/ui/Motion";
 import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
 import { youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
@@ -9,9 +8,6 @@ import ParallaxHero from "@/components/hero/ParallaxHero";
 import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
 
 export default function HomePage() {
-  const latest = [...allReleases].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )[0];
   const featured = youtubeMusicVideos.find(v => v.url.includes("5IsHCZmLGRY")) || youtubeMusicVideos[0];
   return (
     <div className="snap-container h-[100svh] overflow-y-scroll">
@@ -27,28 +23,10 @@ export default function HomePage() {
         </ParallaxHero>
       </Section>
 
-      {/* Latest Release */}
-      {latest && (
-        <Section>
-          <div className="mx-auto w-[min(1100px,92vw)] grid md:grid-cols-[360px,1fr] gap-8 items-center">
-            <Image src={latest.cover} alt={latest.title} width={600} height={600} className="rounded-2xl" />
-            <div>
-              <h2 className="text-3xl mb-2">{latest.title}</h2>
-              <div className="flex gap-3 mb-4">
-                {latest.platforms?.spotify && (
-                  <a className="underline" href={latest.platforms.spotify as string} target="_blank">Spotify</a>
-                )}
-                {latest.platforms?.apple && (
-                  <a className="underline" href={latest.platforms.apple as string} target="_blank">Apple Music</a>
-                )}
-                <Link href={`/release/${latest.slug}`} className="underline">
-                  Play here
-                </Link>
-              </div>
-            </div>
-          </div>
-        </Section>
-      )}
+      {/* About / Bio */}
+      <Section>
+        <ArtistBio />
+      </Section>
 
       {/* Featured Video */}
       <Section>
