@@ -138,7 +138,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                 aria-label={`Open ${it.title}`}
               >
                 {/* Front */}
-                <div className="absolute inset-0 [backface-visibility:hidden]">
+                <div className="absolute inset-0 rotate-y-0 [backface-visibility:hidden]">
                   <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" unoptimized />
                   <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
                     <div className="text-white text-sm font-semibold leading-tight truncate">{it.title}</div>
@@ -174,6 +174,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       </div>
       <style jsx>{`
         .perspective { perspective: 1200px; }
+        .rotate-y-0 { transform: rotateY(0deg); }
         .rotate-y-180 { transform: rotateY(180deg); }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .hide-scroll::-webkit-scrollbar { display: none; }
