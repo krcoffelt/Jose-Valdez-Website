@@ -42,7 +42,7 @@ export default function Navbar() {
       {open && (
         <div
           id="mobile-menu"
-          className="fixed inset-0 z-50 bg-bg/95 backdrop-blur-sm"
+          className="fixed inset-0 z-50 bg-bg/50 backdrop-blur-lg backdrop-saturate-150"
           role="dialog"
           aria-modal="true"
         >
@@ -58,14 +58,14 @@ export default function Navbar() {
               </button>
             </div>
             <div className="py-4">
-              <div className="grid gap-2 text-lg text-neutral-100">
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/" onClick={() => setOpen(false)}>Home</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/music" onClick={() => setOpen(false)}>Music</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/music-player" onClick={() => setOpen(false)}>Player Demo</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/videos" onClick={() => setOpen(false)}>Videos</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/contact" onClick={() => setOpen(false)}>Contact</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/links" onClick={() => setOpen(false)}>Links</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/test-portfolio" onClick={() => setOpen(false)}>Test Portfolio</Link>
+              <div className="grid gap-2 text-lg text-white/95">
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/" onClick={() => setOpen(false)}>Home</Link>
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/music" onClick={() => setOpen(false)}>Music</Link>
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/music-player" onClick={() => setOpen(false)}>Player Demo</Link>
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/videos" onClick={() => setOpen(false)}>Videos</Link>
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/contact" onClick={() => setOpen(false)}>Contact</Link>
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/links" onClick={() => setOpen(false)}>Links</Link>
+                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/test-portfolio" onClick={() => setOpen(false)}>Test Portfolio</Link>
               </div>
             </div>
           </div>
