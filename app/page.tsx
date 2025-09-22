@@ -8,9 +8,27 @@ import ParallaxHero from "@/components/hero/ParallaxHero";
 import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
 import SongWheel from "@/components/works/SongWheel";
 import { allReleases } from "@contentlayer";
+import { placeholderWorks } from "@/data/works/placeholders";
+import SongWheel from "@/components/works/SongWheel";
+import { allReleases } from "@contentlayer";
 
 export default function HomePage() {
   const featured = youtubeMusicVideos.find(v => v.url.includes("5IsHCZmLGRY")) || youtubeMusicVideos[0];
+  const releases = [...allReleases].sort((a, b) => +new Date(b.date) - +new Date(a.date));
+  const realItems = releases.flatMap(r => {
+    const cover = r.cover || "/images/placeholder.svg";
+    const list = (r.tracks as any[]) || [];
+    return list.map((t: any, i: number) => ({
+      id: `${r.slug}-${t.slug ?? i}`,
+      title: t.title ?? r.title,
+      cover,
+      platforms: (r as any).platforms ?? null,
+    }));
+  });
+  const minCount = 10;
+  const wheelItems = (realItems.length >= minCount)
+    ? realItems
+    : [...realItems, ...placeholderWorks].slice(0, Math.max(minCount, realItems.length));
   const releases = [...allReleases].sort((a, b) => +new Date(b.date) - +new Date(a.date));
   const wheelItems = releases.flatMap(r => {
     const cover = r.cover || "/images/placeholder.svg";
