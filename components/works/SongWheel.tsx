@@ -138,7 +138,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                 aria-label={`Open ${it.title}`}
               >
                 {/* Front */}
-                <div className="absolute inset-0 rotate-y-0 [backface-visibility:hidden]">
+                <div className="absolute inset-0 front face">
                   <Image src={it.cover} alt={it.title} fill sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px" className="object-cover" unoptimized />
                   <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
                     <div className="text-white text-sm font-semibold leading-tight truncate">{it.title}</div>
@@ -146,7 +146,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                   </div>
                 </div>
                 {/* Back */}
-                <div className="absolute inset-0 rotate-y-180 [backface-visibility:hidden] bg-white text-black border border-black/10 p-3 flex flex-col justify-between">
+                <div className="absolute inset-0 back face bg-white text-black border border-black/10 p-3 flex flex-col justify-between">
                   <div className="space-y-1">
                     <div className="text-base font-semibold leading-tight line-clamp-2">{it.title}</div>
                     {it.artist && <div className="text-sm text-neutral-700">{it.artist}</div>}
@@ -174,8 +174,9 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       </div>
       <style jsx>{`
         .perspective { perspective: 1200px; }
-        .rotate-y-0 { transform: rotateY(0deg); }
-        .rotate-y-180 { transform: rotateY(180deg); }
+        .front { transform: rotateY(0deg); }
+        .back { transform: rotateY(180deg); }
+        .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .hide-scroll::-webkit-scrollbar { display: none; }
       `}</style>
