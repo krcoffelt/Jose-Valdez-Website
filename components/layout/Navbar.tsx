@@ -58,14 +58,14 @@ export default function Navbar() {
               </button>
             </div>
             <div className="py-4">
-              <div className="grid gap-2 text-lg text-neutral-200">
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/" onClick={() => setOpen(false)}>Home</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/music" onClick={() => setOpen(false)}>Music</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/music-player" onClick={() => setOpen(false)}>Player Demo</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/videos" onClick={() => setOpen(false)}>Videos</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/contact" onClick={() => setOpen(false)}>Contact</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/links" onClick={() => setOpen(false)}>Links</Link>
-                <Link className="px-2 py-3 rounded-lg bg-white/5 active:bg-white/10" href="/test-portfolio" onClick={() => setOpen(false)}>Test Portfolio</Link>
+              <div className="grid gap-2 text-lg text-neutral-100">
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/" onClick={() => setOpen(false)}>Home</Link>
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/music" onClick={() => setOpen(false)}>Music</Link>
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/music-player" onClick={() => setOpen(false)}>Player Demo</Link>
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/videos" onClick={() => setOpen(false)}>Videos</Link>
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/contact" onClick={() => setOpen(false)}>Contact</Link>
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/links" onClick={() => setOpen(false)}>Links</Link>
+                <Link className="px-2 py-3 rounded-lg bg-white/10 hover:bg-white/15 active:bg-white/20" href="/test-portfolio" onClick={() => setOpen(false)}>Test Portfolio</Link>
               </div>
             </div>
           </div>
