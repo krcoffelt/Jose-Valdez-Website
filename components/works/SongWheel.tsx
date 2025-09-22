@@ -15,6 +15,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   const [active, setActive] = useState(0);
   const [mid, setMid] = useState(0);
   const [step, setStep] = useState(0);
+  const [flipped, setFlipped] = useState<number | null>(null);
 
   // Build an extended list to simulate infinite scrolling
   const LOOP = 5; // odd number for a clear middle block
@@ -55,6 +56,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           }
         });
         setActive(best);
+        if (flipped !== null && best !== flipped) setFlipped(null);
 
         // Looping: jump by one block when near the ends
         if (step > 0 && items.length > 0) {
@@ -75,11 +77,21 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       rail.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [items.length, step]);
+  }, [items.length, step, flipped]);
 
   // Scroll is trackpad/mouse/touch only; arrows removed per design
 
   if (!items.length) return null;
+
+  function centerAndFlip(i: number) {
+    const rail = railRef.current;
+    const el = rail?.children?.[i] as HTMLElement | undefined;
+    if (!rail || !el) return;
+    const target = el.offsetLeft + el.clientWidth / 2 - rail.clientWidth / 2;
+    rail.scrollTo({ left: target, behavior: "smooth" });
+    // Flip shortly after centering scroll begins
+    window.setTimeout(() => setFlipped((prev) => (prev === i ? null : i)), 320);
+  }
 
   return (
     <div className="mx-auto w-[min(1100px,92vw)]">
@@ -103,21 +115,44 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
               key={it.id}
               className="snap-center shrink-0 w-[160px] h-[160px] md:w-[200px] md:h-[200px]"
             >
-              <div
-                className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform ${
+              <button
+                onClick={() => centerAndFlip(i)}
+                className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
                 }`}
-                style={{ transform: `scale(${scale})` }}
+                style={{ transform: `scale(${isActive ? scale * 1.06 : scale}) rotateY(${flipped === i ? 180 : 0}deg)` }}
+                aria-label={`Open ${it.title}`}
               >
-                <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" />
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <div className="absolute left-2 bottom-2 right-2 text-left pointer-events-none">
-                  <div className="text-white text-sm font-medium truncate">{it.title}</div>
-                  {it.artist && (
-                    <div className="text-neutral-300 text-xs truncate">{it.artist}</div>
-                  )}
+                {/* Front */}
+                <div className="absolute inset-0 [backface-visibility:hidden]">
+                  <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute left-2 bottom-2 right-2 text-left pointer-events-none">
+                    <div className="text-white text-sm font-medium truncate">{it.title}</div>
+                    {it.artist && <div className="text-neutral-300 text-xs truncate">{it.artist}</div>}
+                  </div>
                 </div>
-              </div>
+                {/* Back */}
+                <div className="absolute inset-0 rotate-y-180 [backface-visibility:hidden] bg-surface/95 border border-white/10 p-3 flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs text-neutral-400">Track</div>
+                    <div className="text-sm font-medium leading-tight line-clamp-2">{it.title}</div>
+                    {it.artist && <div className="text-xs text-neutral-500 mt-1">{it.artist}</div>}
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    {it.platforms?.apple && (
+                      <a className="px-2.5 py-1.5 rounded-lg bg-white text-black text-xs" href={it.platforms.apple} target="_blank" rel="noreferrer">
+                        Apple Music
+                      </a>
+                    )}
+                    {it.platforms?.spotify && (
+                      <a className="px-2.5 py-1.5 rounded-lg bg-white/10 text-xs" href={it.platforms.spotify} target="_blank" rel="noreferrer">
+                        Spotify
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </button>
             </div>
           );
         })}
