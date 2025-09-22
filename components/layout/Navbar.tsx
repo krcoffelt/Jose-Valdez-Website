@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Close menu on route change or escape
   useEffect(() => {
@@ -11,6 +13,22 @@ export default function Navbar() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent background scroll when menu is open
+  useEffect(() => {
+    if (!mounted) return;
+    const root = document.documentElement;
+    if (open) {
+      root.classList.add("nav-open");
+    } else {
+      root.classList.remove("nav-open");
+    }
+    return () => root.classList.remove("nav-open");
+  }, [open, mounted]);
 
   return (
     <header className="sticky top-0 z-50 bg-bg/75 backdrop-blur border-b border-white/5 pt-[env(safe-area-inset-top)]">
@@ -39,12 +57,13 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile overlay menu */}
-      {open && (
+      {open && mounted && createPortal(
         <div
           id="mobile-menu"
-          className="fixed inset-0 z-50 bg-bg/50 backdrop-blur-lg backdrop-saturate-150"
+          className="fixed inset-0 z-[60] bg-bg/45"
           role="dialog"
           aria-modal="true"
+          style={{ backdropFilter: "blur(16px) saturate(1.4)", WebkitBackdropFilter: "blur(16px) saturate(1.4)" }}
         >
           <div className="mx-auto w-[min(1100px,92vw)] pt-3 pb-[env(safe-area-inset-bottom)]">
             <div className="h-14 flex items-center justify-between">
@@ -69,7 +88,8 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );
