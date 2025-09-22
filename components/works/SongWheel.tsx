@@ -126,12 +126,12 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                 {/* Front */}
                 <div className="absolute inset-0 [backface-visibility:hidden]">
                   <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" unoptimized />
-                  <div className="absolute left-2 bottom-2 right-2 pointer-events-none">
-                    <div className="bg-black rounded-md px-2 py-1">
-                      <div className="text-white text-sm font-medium truncate">{it.title}</div>
-                      {it.artist && <div className="text-white/80 text-xs truncate">{it.artist}</div>}
-                    </div>
+                <div className="absolute right-2 bottom-2 left-auto pointer-events-none text-right">
+                  <div className="bg-black rounded-md px-2 py-1 inline-block max-w-[90%]">
+                    <div className="text-white text-sm font-medium truncate">{it.title}</div>
+                    {it.artist && <div className="text-white/80 text-xs truncate">{it.artist}</div>}
                   </div>
+                </div>
                 </div>
                 {/* Back */}
                 <div className="absolute inset-0 rotate-y-180 [backface-visibility:hidden] bg-white text-black border border-black/10 p-3 flex flex-col justify-between">
@@ -160,6 +160,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       </div>
       <style jsx>{`
         .perspective { perspective: 1200px; }
+        .rotate-y-180 { transform: rotateY(180deg); }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .hide-scroll::-webkit-scrollbar { display: none; }
       `}</style>
