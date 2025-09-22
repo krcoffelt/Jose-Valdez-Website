@@ -9,8 +9,6 @@ import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
 import SongWheel from "@/components/works/SongWheel";
 import { allReleases } from "@contentlayer";
 import { placeholderWorks } from "@/data/works/placeholders";
-import SongWheel from "@/components/works/SongWheel";
-import { allReleases } from "@contentlayer";
 
 export default function HomePage() {
   const featured = youtubeMusicVideos.find(v => v.url.includes("5IsHCZmLGRY")) || youtubeMusicVideos[0];
@@ -21,6 +19,7 @@ export default function HomePage() {
     return list.map((t: any, i: number) => ({
       id: `${r.slug}-${t.slug ?? i}`,
       title: t.title ?? r.title,
+      artist: t.artist ?? undefined,
       cover,
       platforms: (r as any).platforms ?? null,
     }));
@@ -29,17 +28,6 @@ export default function HomePage() {
   const wheelItems = (realItems.length >= minCount)
     ? realItems
     : [...realItems, ...placeholderWorks].slice(0, Math.max(minCount, realItems.length));
-  const releases = [...allReleases].sort((a, b) => +new Date(b.date) - +new Date(a.date));
-  const wheelItems = releases.flatMap(r => {
-    const cover = r.cover || "/images/placeholder.svg";
-    const list = (r.tracks as any[]) || [];
-    return list.map((t: any, i: number) => ({
-      id: `${r.slug}-${t.slug ?? i}`,
-      title: t.title ?? r.title,
-      cover,
-      platforms: (r as any).platforms ?? null,
-    }));
-  });
   return (
     <div className="snap-container h-[100svh] overflow-y-scroll">
       {/* Hero */}
