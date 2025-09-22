@@ -133,9 +133,10 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                 onClick={() => centerAndFlip(i)}
                 className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
-                }`}
-                style={{ transform: `scale(${isActive ? Math.min(1.12, scale * 1.08) : scale}) rotateY(${flipped === i ? 180 : 0}deg)` }}
+                } ${flipped === i ? 'is-flipped' : ''}`}
+                style={{ transform: `scale(${isActive ? Math.min(1.12, scale * 1.08) : scale})` }}
                 aria-label={`Open ${it.title}`}
+                aria-pressed={flipped === i}
               >
                 {/* Front */}
                 <div className="absolute inset-0 front face">
@@ -176,7 +177,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
         .perspective { perspective: 1200px; }
         .front { transform: rotateY(0deg); }
         .back { transform: rotateY(180deg); }
-        .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .face {
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          transform-style: preserve-3d;
+          transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
+        }
+        .is-flipped .front { transform: rotateY(180deg); }
+        .is-flipped .back { transform: rotateY(0deg); }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .hide-scroll::-webkit-scrollbar { display: none; }
       `}</style>
