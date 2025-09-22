@@ -17,6 +17,16 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   const [mid, setMid] = useState(0);
   const [step, setStep] = useState(0);
   const [flipped, setFlipped] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
 
   // Build an extended list to simulate infinite scrolling
   const LOOP = 5; // odd number for a clear middle block
@@ -115,26 +125,22 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
       <div
         ref={railRef}
-        className="relative mx-auto w-[352px] md:w-[432px] lg:w-[1024px] flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
+        className="relative mx-auto w-[392px] md:w-[432px] lg:w-[1024px] flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
       >
         {extended.map((it, i) => {
-          // Scale based on distance from the viewport center for subtle wheel depth
-          const el = (railRef.current?.children?.[i] as HTMLElement | undefined);
-          const centerX = el ? el.offsetLeft + el.clientWidth / 2 : 0;
-          const distCards = step ? Math.abs(centerX - mid) / step : 0;
-          const scale = Math.max(0.86, 1 - Math.min(1, distCards) * 0.12);
           const isActive = i === active;
+          const scale = isActive ? (isMobile ? 1.2 : 1.1) : 0.92;
           return (
             <div
               key={it.id}
-              className="snap-center shrink-0 w-[160px] h-[160px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
+              className="snap-center shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
               <button
                 onClick={() => centerAndFlip(i)}
-                className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform [transform-style:preserve-3d] ${
+                className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
                 } ${flipped === i ? 'is-flipped' : ''}`}
-                style={{ transform: `scale(${isActive ? Math.min(1.12, scale * 1.08) : scale})` }}
+                style={{ transform: `scale(${scale})` }}
                 aria-label={`Open ${it.title}`}
                 aria-pressed={flipped === i}
               >
