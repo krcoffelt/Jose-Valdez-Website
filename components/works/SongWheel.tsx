@@ -115,7 +115,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
       <div
         ref={railRef}
-        className="relative mx-auto w-[352px] md:w-[432px] flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
+        className="relative mx-auto w-[352px] md:w-[432px] lg:w-[1024px] flex gap-4 overflow-x-auto py-4 perspective hide-scroll"
       >
         {extended.map((it, i) => {
           // Scale based on distance from the viewport center for subtle wheel depth
@@ -127,7 +127,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           return (
             <div
               key={it.id}
-              className="snap-center shrink-0 w-[160px] h-[160px] md:w-[200px] md:h-[200px]"
+              className="snap-center shrink-0 w-[160px] h-[160px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
               <button
                 onClick={() => centerAndFlip(i)}
@@ -139,7 +139,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
               >
                 {/* Front */}
                 <div className="absolute inset-0 rotate-y-0 [backface-visibility:hidden]">
-                  <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" unoptimized />
+                  <Image src={it.cover} alt={it.title} fill sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px" className="object-cover" unoptimized />
                   <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
                     <div className="text-white text-sm font-semibold leading-tight truncate">{it.title}</div>
                     {it.artist && <div className="text-white/90 text-xs truncate">{it.artist}</div>}
