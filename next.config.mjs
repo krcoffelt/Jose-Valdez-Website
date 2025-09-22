@@ -1,7 +1,7 @@
 import { withContentlayer } from "next-contentlayer";
 
 const nextConfig = {
-  images: { domains: [] },
+  images: { domains: ["rlefyrqefcxiifzggwpi.supabase.co"] },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
 };

@@ -5,7 +5,7 @@ export default function ArtistBio() {
     <div className="mx-auto w-[min(1100px,92vw)] grid md:grid-cols-[360px,1fr] gap-8 items-center">
       <div className="rounded-2xl overflow-hidden bg-black/40">
         <Image
-          src="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png"
+          src="https://rlefyrqefcxiifzggwpi.supabase.co/storage/v1/object/public/Photos/Screenshot%202025-09-22%20at%2012.05.40%20PM.png"
           alt="Jose Valdez"
           width={1200}
           height={1200}
@@ -22,4 +22,3 @@ He has been a part of projects with Hillsong Young & Free and more well known ar
     </div>
   );
 }
-
