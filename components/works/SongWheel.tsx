@@ -125,7 +125,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
               >
                 {/* Front */}
                 <div className="absolute inset-0 [backface-visibility:hidden]">
-                  <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" />
+                  <Image src={it.cover} alt={it.title} fill sizes="200px" className="object-cover" unoptimized />
                   <div className="absolute left-2 bottom-2 right-2 pointer-events-none">
                     <div className="bg-black rounded-md px-2 py-1">
                       <div className="text-white text-sm font-medium truncate">{it.title}</div>
