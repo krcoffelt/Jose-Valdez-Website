@@ -1,2 +1,1 @@
-export * from "./.contentlayer/generated";
-
+export * from "./josewebsite2/contentlayer.generated";
