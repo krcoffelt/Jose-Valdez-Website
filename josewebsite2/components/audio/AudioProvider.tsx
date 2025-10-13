@@ -2,8 +2,8 @@
 import { createContext, useContext, useRef, useState } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import { SkipBack, SkipForward, Play, Pause, Volume2 } from "lucide-react";
-import type { AudioTrack } from "./types";
-export type { AudioTrack } from "./types";
+import type { AudioTrack as AudioTrackType } from "./types";
+export type AudioTrack = AudioTrackType;
 type Ctx = {
   queue: AudioTrack[];
   index: number;
