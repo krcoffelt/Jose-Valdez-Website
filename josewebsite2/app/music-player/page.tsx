@@ -4,7 +4,8 @@ import { useEffect, useMemo } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import { SkipBack, SkipForward, Play, Pause } from "lucide-react";
 import { allReleases } from "@contentlayer";
-import { useAudio, type AudioTrack } from "@/components/audio/AudioProvider";
+import { useAudio } from "@/components/audio/AudioProvider";
+import type { AudioTrack } from "@/components/audio/types";
 
 type ReleaseTrack = {
   slug?: string;

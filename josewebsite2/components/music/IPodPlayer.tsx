@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { allReleases } from "@contentlayer";
 import type { Release } from "@contentlayer";
-import { useAudio, type AudioTrack } from "@/components/audio/AudioProvider";
+import { useAudio } from "@/components/audio/AudioProvider";
+import type { AudioTrack } from "@/components/audio/types";
 
 type ReleaseTrack = {
   slug?: string;
