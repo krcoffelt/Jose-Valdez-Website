@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { background:#0B0B0C; color:#ECECEC; overflow-x: hidden; overscroll-behavior-x: none; }
+.nav-open, .nav-open body { overflow: hidden; }
+.no-tap-highlight, * { -webkit-tap-highlight-color: transparent; }
+.snap-container { scroll-snap-type: y mandatory; }
+.snap-section { scroll-snap-align: start; min-height: 100svh; }
