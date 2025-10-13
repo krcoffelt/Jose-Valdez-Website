@@ -18,12 +18,12 @@
         "name": "next"
       }
     ],
-    "baseUrl": ".",
+    "baseUrl": "./josewebsite2",
     "paths": {
       "@/*": ["./*"],
       "@contentlayer": ["./contentlayer.generated.ts"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "./.contentlayer/generated"],
+  "include": ["josewebsite2/next-env.d.ts", "josewebsite2/**/*.ts", "josewebsite2/**/*.tsx", "josewebsite2/.next/types/**/*.ts", "josewebsite2/.contentlayer/generated"],
   "exclude": ["node_modules"]
 }
