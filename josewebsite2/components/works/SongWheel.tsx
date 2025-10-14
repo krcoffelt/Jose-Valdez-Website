@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { CalendarDays, Headphones, Music2, Play } from "lucide-react";
+import { useAudio } from "@/components/audio/AudioProvider";
 
 export type SongItem = {
   id: string;
@@ -9,10 +11,22 @@ export type SongItem = {
   cover: string;
   date?: string; // ISO string (Release date)
   platforms?: { apple?: string; spotify?: string } | null;
+  audioSrc?: string;
+  release?: string;
+  releaseSlug?: string;
+};
+
+const formatDate = (iso?: string) => {
+  if (!iso) return "";
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 };
 
 export default function SongWheel({ items }: { items: SongItem[] }) {
+  const audio = useAudio();
   const railRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [step, setStep] = useState(0);
   const [flipped, setFlipped] = useState<number | null>(null);
@@ -30,6 +44,44 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   // Build an extended list to simulate infinite scrolling
   const LOOP = 5; // odd number for a clear middle block
   const extended = useMemo(() => Array.from({ length: LOOP }).flatMap(() => items), [items]);
+  const audioQueue = useMemo(
+    () =>
+      items.map(item => ({
+        id: item.id,
+        title: item.title,
+        artist: item.artist,
+        cover: item.cover,
+        src: item.audioSrc,
+      })),
+    [items]
+  );
+
+  useEffect(() => {
+    if (!audioQueue.length) return;
+    if (!audioQueue.some(track => Boolean(track.src))) return;
+    if (audio.queue.length === 0) {
+      audio.setQueue(audioQueue, 0);
+    }
+  }, [audio, audioQueue]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const node = containerRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      entries => {
+        const entry = entries[0];
+        const shouldShow = Boolean((entry?.isIntersecting ?? false) && items.length > 0);
+        audio.setDockVisible(shouldShow);
+      },
+      { threshold: 0.35 }
+    );
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      audio.setDockVisible(false);
+    };
+  }, [audio, items.length]);
 
   useLayoutEffect(() => {
     const rail = railRef.current;
@@ -114,8 +166,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     }
   }
 
+  function handlePlay(index: number) {
+    const track = audioQueue[index];
+    if (!track || !track.src) return;
+    audio.setQueue(audioQueue, index);
+  }
+
   return (
-    <div className="mx-auto w-[min(1100px,92vw)]">
+    <div ref={containerRef} className="mx-auto w-[min(1100px,92vw)]">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-3xl font-semibold">Music Portfolio</h2>
       </div>
@@ -124,54 +182,109 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
         ref={railRef}
         className="relative mx-auto w-[min(380px,92vw)] md:w-[432px] lg:w-[1024px] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-8 md:py-4 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
       >
-        {extended.map((it, i) => {
+        {extended.map((card, i) => {
           const isActive = i === active;
           const scale = isActive ? (isMobile ? 1.2 : 1.1) : 0.92;
+          const baseIndex = i % items.length;
+          const playable = Boolean(items[baseIndex]?.audioSrc);
+          const formattedDate = formatDate(card.date);
           return (
             <div
-              key={it.id}
+              key={`${card.id}-${i}`}
               className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
-              <button
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => centerAndFlip(i)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    centerAndFlip(i);
+                  }
+                }}
                 className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
                 } ${flipped === i ? 'is-flipped' : ''}`}
                 style={{ transform: `scale(${scale})` }}
-                aria-label={`Open ${it.title}`}
+                aria-label={`Open ${card.title}`}
                 aria-pressed={flipped === i}
               >
                 {/* Front */}
                 <div className="absolute inset-0 front face">
-                  <Image src={it.cover} alt={it.title} fill sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px" className="object-cover" unoptimized />
+                  <Image src={card.cover} alt={card.title} fill sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px" className="object-cover" unoptimized />
                   <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
-                    <div className="text-white text-sm font-semibold leading-tight truncate">{it.title}</div>
-                    {it.artist && <div className="text-white/90 text-xs truncate">{it.artist}</div>}
+                    <div className="text-white text-sm font-semibold leading-tight truncate">{card.title}</div>
+                    {card.artist && <div className="text-white/90 text-xs truncate">{card.artist}</div>}
                   </div>
                 </div>
                 {/* Back */}
-                <div className="absolute inset-0 back face bg-white text-black border border-black/10 p-3 flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <div className="text-base font-semibold leading-tight line-clamp-2">{it.title}</div>
-                    {it.artist && <div className="text-sm text-neutral-700">{it.artist}</div>}
-                    {it.date && (
-                      <div className="text-xs text-neutral-600">Release Date: {new Date(it.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</div>
-                    )}
+                <div className="absolute inset-0 back face bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200 text-neutral-900 border border-black/10 p-4 flex flex-col">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="text-[10px] uppercase tracking-[0.35em] text-neutral-400">Track</div>
+                      <div className="text-lg font-semibold leading-tight line-clamp-2">{card.title}</div>
+                      {card.artist && <div className="text-sm text-neutral-500 line-clamp-1">{card.artist}</div>}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handlePlay(baseIndex);
+                      }}
+                      disabled={!playable}
+                      className={`h-10 w-10 rounded-full border flex items-center justify-center transition ${
+                        playable
+                          ? "border-neutral-900 bg-neutral-900 text-white hover:bg-black"
+                          : "border-neutral-300 bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                      }`}
+                      aria-label={playable ? `Play ${card.title}` : `Preview unavailable for ${card.title}`}
+                    >
+                      <Play className="h-4 w-4" />
+                    </button>
                   </div>
-                  <div className="flex gap-2 pt-2">
-                    {it.platforms?.apple && (
-                      <a className="px-2.5 py-1.5 rounded-lg bg-black text-white text-xs" href={it.platforms.apple} target="_blank" rel="noreferrer">
+                  <div className="mt-4 space-y-3 text-xs text-neutral-600">
+                    {card.release && (
+                      <div className="flex items-center gap-2">
+                        <Music2 className="h-3.5 w-3.5 text-neutral-500" />
+                        <span className="font-medium text-neutral-700 line-clamp-1">{card.release}</span>
+                      </div>
+                    )}
+                    {formattedDate && (
+                      <div className="flex items-center gap-2">
+                        <CalendarDays className="h-3.5 w-3.5 text-neutral-500" />
+                        <span>{formattedDate}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Headphones className="h-3.5 w-3.5 text-neutral-500" />
+                      <span>{playable ? "Preview ready" : "Preview unavailable"}</span>
+                    </div>
+                  </div>
+                  <div className="mt-auto pt-4 flex flex-wrap gap-2">
+                    {card.platforms?.apple && (
+                      <a
+                        className="px-2.5 py-1.5 rounded-lg bg-neutral-900 text-white text-[11px] font-medium tracking-wide uppercase"
+                        href={card.platforms.apple}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Apple Music
                       </a>
                     )}
-                    {it.platforms?.spotify && (
-                      <a className="px-2.5 py-1.5 rounded-lg bg-black text-white text-xs" href={it.platforms.spotify} target="_blank" rel="noreferrer">
+                    {card.platforms?.spotify && (
+                      <a
+                        className="px-2.5 py-1.5 rounded-lg bg-neutral-700 text-white text-[11px] font-medium tracking-wide uppercase"
+                        href={card.platforms.spotify}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Spotify
                       </a>
                     )}
                   </div>
                 </div>
-              </button>
+              </div>
             </div>
           );
         })}

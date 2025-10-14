@@ -8,7 +8,6 @@ import SongWheel, { type SongItem } from "@/components/works/SongWheel";
 import { allReleases } from "@contentlayer";
 import type { Release } from "@contentlayer";
 import { placeholderWorks } from "@/data/works/placeholders";
-import IPodPlayer from "@/components/music/IPodPlayer";
 
 type ReleaseTrack = {
   slug?: string;
@@ -31,6 +30,9 @@ function toSongItem(release: Release, track: ReleaseTrack, index: number): SongI
     artist: track.artist || undefined,
     cover: release.cover || "/images/placeholder.svg",
     date: release.date,
+    audioSrc: track.audioSrc ?? undefined,
+    release: release.title,
+    releaseSlug: release.slug,
     platforms: platforms
       ? {
           apple: platforms.apple,
@@ -80,13 +82,6 @@ export default function HomePage() {
           <SongWheel items={wheelItems} />
         </Section>
       )}
-
-      {/* Interactive iPod Player */}
-      <Section>
-        <div className="mx-auto w-[min(1100px,92vw)] flex justify-center">
-          <IPodPlayer />
-        </div>
-      </Section>
 
       {/* Featured Video */}
       <Section>

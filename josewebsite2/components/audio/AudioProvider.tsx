@@ -19,6 +19,8 @@ type Ctx = {
   time: number;
   duration: number;
   volume: number;
+  dockVisible: boolean;
+  setDockVisible: (v: boolean) => void;
 };
 const AudioCtx = createContext<Ctx | null>(null);
 export const useAudio = () => useContext(AudioCtx)!;
@@ -31,6 +33,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [time, setTime] = useState(0);
   const [duration, setDur] = useState(0);
   const [volume, setVol] = useState(0.9);
+  const [dockVisible, setDockVisible] = useState(false);
 
   const current = index >= 0 ? queue[index] : undefined;
 
@@ -63,7 +66,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AudioCtx.Provider
-      value={{ queue, index, playing, current, setQueue, play, pause, next, prev, seek, setVolume, time, duration, volume }}
+      value={{ queue, index, playing, current, setQueue, play, pause, next, prev, seek, setVolume, time, duration, volume, dockVisible, setDockVisible }}
     >
       {children}
       <audio
@@ -81,9 +84,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
 function PlayerDock() {
   const a = useAudio();
-  if (!a.current) return null;
+  const current = a.current;
+  if (!current) return null;
+  const visible = a.dockVisible;
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[min(900px,92vw)] rounded-2xl bg-surface/80 backdrop-blur px-4 py-3 shadow-soft border border-white/5 mb-[env(safe-area-inset-bottom)]">
+    <div
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[min(900px,92vw)] rounded-2xl bg-surface/80 backdrop-blur px-4 py-3 shadow-soft border border-white/5 mb-[env(safe-area-inset-bottom)] transition-all duration-300 ease-out transform-gpu ${
+        visible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-6 pointer-events-none"
+      }`}
+      aria-hidden={!visible}
+    >
       <div className="flex items-center gap-4">
         <button onClick={a.prev} aria-label="Previous" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
           <SkipBack className="h-4 w-4 text-white" />
