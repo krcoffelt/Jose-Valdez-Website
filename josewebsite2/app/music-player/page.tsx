@@ -87,7 +87,7 @@ export default function MusicPlayerDemo() {
               return (
                 <button
                   key={t.id}
-                  onClick={() => a.setQueue(queue, i)}
+                  onClick={() => a.setQueue(queue, i, { autoplay: true })}
                   className={`w-full text-left rounded-xl px-3 py-2 flex items-center gap-3 border transition ${
                     active ? "bg-white/10 border-white/20" : "bg-transparent border-white/10 hover:bg-white/5"
                   }`}

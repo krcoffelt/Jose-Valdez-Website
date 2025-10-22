@@ -44,21 +44,26 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   // Build an extended list to simulate infinite scrolling
   const LOOP = 5; // odd number for a clear middle block
   const extended = useMemo(() => Array.from({ length: LOOP }).flatMap(() => items), [items]);
-  const audioQueue = useMemo(
-    () =>
-      items.map(item => ({
+  const audioQueue = useMemo(() => {
+    const seen = new Set<string>();
+    return items
+      .filter((item) => Boolean(item.audioSrc))
+      .filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      })
+      .map((item) => ({
         id: item.id,
         title: item.title,
         artist: item.artist,
         cover: item.cover,
         src: item.audioSrc,
-      })),
-    [items]
-  );
+      }));
+  }, [items]);
 
   useEffect(() => {
     if (!audioQueue.length) return;
-    if (!audioQueue.some(track => Boolean(track.src))) return;
     if (audio.queue.length === 0) {
       audio.setQueue(audioQueue, 0);
     }
@@ -167,9 +172,21 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   }
 
   function handlePlay(index: number) {
-    const track = audioQueue[index];
-    if (!track || !track.src) return;
-    audio.setQueue(audioQueue, index);
+    const item = items[index];
+    if (!item?.audioSrc) return;
+    const queueIndex = audioQueue.findIndex((track) => track.id === item.id);
+    if (queueIndex === -1) return;
+    const activeId = audio.queue[audio.index]?.id;
+    const queuesMatch = audio.queue.length === audioQueue.length && audio.queue.every((track, idx) => track.id === audioQueue[idx].id);
+    if (queuesMatch && activeId === item.id) {
+      if (audio.playing) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+      return;
+    }
+    audio.setQueue(audioQueue, Math.max(queueIndex, 0), { autoplay: true });
   }
 
   return (
@@ -186,23 +203,17 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           const isActive = i === active;
           const scale = isActive ? (isMobile ? 1.2 : 1.1) : 0.92;
           const baseIndex = i % items.length;
-          const playable = Boolean(items[baseIndex]?.audioSrc);
+          const baseItem = items[baseIndex];
+          const playable = Boolean(baseItem?.audioSrc);
           const formattedDate = formatDate(card.date);
           return (
             <div
               key={`${card.id}-${i}`}
               className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
-              <div
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
                 onClick={() => centerAndFlip(i)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    centerAndFlip(i);
-                  }
-                }}
                 className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
                 } ${flipped === i ? 'is-flipped' : ''}`}
@@ -284,7 +295,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                     )}
                   </div>
                 </div>
-              </div>
+              </button>
             </div>
           );
         })}

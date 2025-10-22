@@ -9,7 +9,7 @@ type Ctx = {
   index: number;
   playing: boolean;
   current?: AudioTrack;
-  setQueue: (q: AudioTrack[], startAt?: number) => void;
+  setQueue: (q: AudioTrack[], startAt?: number, options?: { autoplay?: boolean }) => void;
   play: (t?: AudioTrack) => void;
   pause: () => void;
   next: () => void;
@@ -37,10 +37,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const current = index >= 0 ? queue[index] : undefined;
 
-  const setQueue = (q: AudioTrack[], startAt = 0) => {
+  const setQueue = (q: AudioTrack[], startAt = 0, options?: { autoplay?: boolean }) => {
     setQ(q);
     setI(startAt);
-    setTimeout(() => play(), 0);
+    const autoplay = options?.autoplay ?? false;
+    if (autoplay) {
+      setTimeout(() => play(), 0);
+    } else {
+      pause();
+    }
   };
   const play = (t?: AudioTrack) => {
     if (t) {
