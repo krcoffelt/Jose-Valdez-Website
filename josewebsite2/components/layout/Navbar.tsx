@@ -32,11 +32,10 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-bg/75 backdrop-blur border-b border-white/5 pt-[env(safe-area-inset-top)]">
-      <nav className="mx-auto w-[min(1100px,92vw)] h-14 flex items-center justify-between px-1">
+      <nav className="mx-auto w-[min(1100px,92vw)] h-14 flex items-center gap-4 px-1">
         <Link href="/" className="font-semibold tracking-tight">JOSÉ</Link>
         {/* Desktop nav */}
-        <div className="hidden md:flex gap-4 text-sm text-neutral-300">
-          <Link className="h-10 flex items-center" href="/">Home</Link>
+        <div className="hidden md:flex flex-1 items-center justify-center gap-6 text-sm text-neutral-300">
           <Link className="h-10 flex items-center" href="/music">Music</Link>
           <Link className="h-10 flex items-center" href="/music-player">Player Demo</Link>
           <Link className="h-10 flex items-center" href="/videos">Videos</Link>
@@ -49,7 +48,7 @@ export default function Navbar() {
           aria-label="Open menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
-          className="md:hidden h-9 px-3 rounded-lg border border-white/10 text-sm text-neutral-200"
+          className="md:hidden h-9 px-3 rounded-lg border border-white/10 text-sm text-neutral-200 ml-auto"
           onClick={() => setOpen(true)}
         >
           Menu
@@ -78,7 +77,6 @@ export default function Navbar() {
             </div>
             <div className="py-4">
               <div className="grid gap-2 text-lg text-white/95">
-                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/" onClick={() => setOpen(false)}>Home</Link>
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/music" onClick={() => setOpen(false)}>Music</Link>
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/music-player" onClick={() => setOpen(false)}>Player Demo</Link>
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/videos" onClick={() => setOpen(false)}>Videos</Link>
