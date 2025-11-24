@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const WEBHOOK_URL = process.env.JOSE_SIGNUP_WEBHOOK;
-const SHARED_SECRET = process.env.JOSE_SIGNUP_SECRET;
+const WEBHOOK_URL = process.env.JOSE_SIGNUP_WEBHOOK || process.env.NEXT_PUBLIC_JOSE_SIGNUP_WEBHOOK;
+const SHARED_SECRET = process.env.JOSE_SIGNUP_SECRET || process.env.NEXT_PUBLIC_JOSE_SIGNUP_SECRET;
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -55,4 +55,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Something went wrong." }, { status: 500 });
   }
 }
-
