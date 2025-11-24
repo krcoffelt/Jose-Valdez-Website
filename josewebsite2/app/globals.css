@@ -8,3 +8,31 @@ html, body { background:#0B0B0C; color:#ECECEC; overflow-x: hidden; overscroll-b
 .no-tap-highlight, * { -webkit-tap-highlight-color: transparent; }
 .snap-container { scroll-snap-type: y mandatory; }
 .snap-section { scroll-snap-align: start; min-height: 100svh; }
+
+@keyframes celebrate-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(0);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8) translateY(-12px);
+  }
+}
+
+.celebrate-dot {
+  --delay: 0ms;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #C9A362, #fef3c7);
+  animation: celebrate-burst 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay) both;
+  box-shadow:
+    20px -8px 0 -2px rgba(201, 163, 98, 0.4),
+    -22px -6px 0 -2px rgba(255, 255, 255, 0.35),
+    0 12px 0 -2px rgba(255, 255, 255, 0.25);
+}

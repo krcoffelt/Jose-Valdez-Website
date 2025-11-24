@@ -8,6 +8,7 @@ import SongWheel, { type SongItem } from "@/components/works/SongWheel";
 import { allReleases } from "@contentlayer";
 import type { Release } from "@contentlayer";
 import { placeholderWorks } from "@/data/works/placeholders";
+import NewsletterForm from "@/components/forms/NewsletterForm";
 
 type ReleaseTrack = {
   slug?: string;
@@ -100,23 +101,12 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* Newsletter CTA (stub) */}
+      {/* Newsletter CTA */}
       <Section>
         <div className="mx-auto w-[min(800px,92vw)] text-center space-y-4">
           <h3 className="text-2xl">Get updates</h3>
           <p className="text-neutral-400">Be first to hear new music.</p>
-          <form className="flex flex-col sm:flex-row gap-2 justify-center items-stretch sm:items-center">
-            <input
-              type="email"
-              name="email"
-              aria-label="Email address"
-              className="px-3 py-2 rounded-xl bg-surface w-full sm:w-[340px]"
-              placeholder="your@email.com"
-              inputMode="email"
-              autoComplete="email"
-            />
-            <button type="submit" className="px-4 py-2 rounded-xl bg-gold text-black w-full sm:w-auto">Subscribe</button>
-          </form>
+          <NewsletterForm />
         </div>
       </Section>
     </div>
