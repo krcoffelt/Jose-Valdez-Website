@@ -27,10 +27,7 @@ export default function ArtistBio() {
           <blockquote className="space-y-6 text-lg leading-relaxed text-neutral-100 md:text-[1.35rem]">
             <p>
               “Music is the only thing I’ve ever been good at that I could use to shed light. It’s my purpose. I don’t see a line between Christian and secular — I just want to use the gifts God gave me and do it to the best of my ability. My music is my offering, my worship. If it reaches someone, that’s amazing. If it changes a life, even better. And if people hate it, that’s okay too —
-              <span className="relative mx-1 inline-flex items-center">
-                <span className="absolute inset-0 rounded-full bg-gold/25 blur-md" aria-hidden />
-                <span className="relative font-semibold text-white">it’s not for them. It’s for Him.</span>
-              </span>
+              <span className="mx-1 font-semibold text-gold">it’s not for them. It’s for Him.</span>
               The message I want to share is simple: you’re never too far away, we can never outrun His grace.”
             </p>
             <footer className="flex items-center justify-end gap-4 text-sm text-neutral-400 md:text-base">
