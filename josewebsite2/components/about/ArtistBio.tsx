@@ -17,7 +17,7 @@ export default function ArtistBio() {
               Artist Statement
             </span>
             <div className="space-y-3">
-              <h2 className="text-2xl font-semibold text-white md:text-3xl">Light, purpose, and worship</h2>
+              <h2 className="text-2xl font-semibold text-white md:text-3xl">Purpose and Worship</h2>
               <p className="text-sm leading-relaxed text-neutral-400 md:text-base">
                 A look at José’s heart for songwriting and ministry — why every lyric points back to grace.
               </p>
@@ -26,7 +26,12 @@ export default function ArtistBio() {
 
           <blockquote className="space-y-6 text-lg leading-relaxed text-neutral-100 md:text-[1.35rem]">
             <p>
-              “Music is the only thing I’ve ever been good at that I could use to shed light. It’s my purpose. I don’t see a line between Christian and secular — I just want to use the gifts God gave me and do it to the best of my ability. My music is my offering, my worship. If it reaches someone, that’s amazing. If it changes a life, even better. And if people hate it, that’s okay too — it’s not for them. It’s for Him. The message I want to share is simple: you’re never too far away, we can never outrun His grace.”
+              “Music is the only thing I’ve ever been good at that I could use to shed light. It’s my purpose. I don’t see a line between Christian and secular — I just want to use the gifts God gave me and do it to the best of my ability. My music is my offering, my worship. If it reaches someone, that’s amazing. If it changes a life, even better. And if people hate it, that’s okay too —
+              <span className="relative mx-1 inline-flex items-center">
+                <span className="absolute inset-0 rounded-full bg-gold/25 blur-md" aria-hidden />
+                <span className="relative font-semibold text-white">it’s not for them. It’s for Him.</span>
+              </span>
+              The message I want to share is simple: you’re never too far away, we can never outrun His grace.”
             </p>
             <footer className="flex items-center justify-end gap-4 text-sm text-neutral-400 md:text-base">
               <span className="hidden h-px w-20 bg-white/20 md:block" aria-hidden />
