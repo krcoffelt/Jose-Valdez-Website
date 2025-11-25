@@ -194,8 +194,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       <div className="flex flex-col gap-2 mb-4">
         <h2 className="text-3xl font-semibold">Music Portfolio</h2>
         <p className="text-sm text-neutral-400 md:hidden">
-          Swipe to explore singles and live cuts. Tap a card to play a preview.
+          Swipe sideways to explore singles and live cuts. Tap a card to play a preview.
         </p>
+        <div className="hidden md:flex items-center gap-2 text-sm text-neutral-400">
+          <span className="flex items-center gap-1">
+            <span className="h-1 w-6 rounded-full bg-white/20 animate-pulse" aria-hidden />
+            Scroll to explore the catalog
+          </span>
+        </div>
       </div>
 
       <div

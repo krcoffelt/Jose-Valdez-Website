@@ -17,8 +17,19 @@ const iconMap = {
 
 export default function LinksPage() {
   return (
-    <div className="min-h-[100svh] bg-gradient-to-b from-black via-[#0B0B0C] to-[#0B0B0C] py-16">
-      <div className="mx-auto w-[min(640px,92vw)] space-y-10">
+    <div className="relative min-h-[100svh] py-16 overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          backgroundImage: "linear-gradient(180deg, rgba(0,0,0,0.85), rgba(11,11,12,0.98)), url('/images/links-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "grayscale(10%) blur(12px)",
+        }}
+      />
+      <div aria-hidden className="absolute inset-0 bg-black/60" />
+      <div className="relative mx-auto w-[min(640px,92vw)] space-y-10">
         <header className="rounded-3xl border border-white/10 bg-white/5 shadow-soft px-6 py-8 text-center">
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10">
             <PlayCircle className="h-8 w-8 text-white" aria-hidden />
