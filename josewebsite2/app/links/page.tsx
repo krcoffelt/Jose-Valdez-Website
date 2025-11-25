@@ -39,7 +39,7 @@ export default function LinksPage() {
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative block overflow-hidden rounded-2xl border border-white/5 bg-surface/70 px-5 py-4 shadow-soft transition hover:-translate-y-1 hover:border-white/25"
+                className="group relative block overflow-hidden rounded-2xl border border-white/5 bg-surface/70 px-5 py-4 shadow-soft transition hover:-translate-y-1 hover:border-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50 active:translate-y-0 active:scale-[0.995]"
               >
                 <div
                   aria-hidden

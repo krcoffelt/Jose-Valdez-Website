@@ -55,7 +55,7 @@ export default function HomePage() {
     ? realItems
     : [...realItems, ...placeholderWorks].slice(0, Math.max(minCount, realItems.length));
   return (
-    <div className="snap-container h-[100svh] overflow-y-scroll">
+    <div className="md:snap-container md:h-[100svh] md:overflow-y-scroll">
       {/* Hero */}
       <Section>
         <ParallaxHero

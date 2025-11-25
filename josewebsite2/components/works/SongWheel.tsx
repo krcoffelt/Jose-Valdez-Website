@@ -190,14 +190,17 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   }
 
   return (
-    <div ref={containerRef} className="mx-auto w-[min(1100px,92vw)]">
-      <div className="flex items-center justify-between mb-4">
+    <div ref={containerRef} className="mx-auto w-[min(1100px,92vw)] px-3 sm:px-0">
+      <div className="flex flex-col gap-2 mb-4">
         <h2 className="text-3xl font-semibold">Music Portfolio</h2>
+        <p className="text-sm text-neutral-400 md:hidden">
+          Swipe to explore singles and live cuts. Tap a card to play a preview.
+        </p>
       </div>
 
       <div
         ref={railRef}
-        className="relative mx-auto w-[min(380px,92vw)] md:w-[432px] lg:w-[1024px] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-8 md:py-4 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
+        className="relative mx-auto w-full max-w-[min(1024px,95vw)] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-6 md:py-4 px-1 md:px-0 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
       >
         {extended.map((card, i) => {
           const isActive = i === active;
