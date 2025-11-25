@@ -37,7 +37,6 @@ export default function Navbar() {
         {/* Desktop nav */}
         <div className="hidden md:flex flex-1 items-center justify-center gap-6 text-sm text-neutral-300">
           <Link className="h-10 flex items-center" href="/music">Music</Link>
-          <Link className="h-10 flex items-center" href="/videos">Videos</Link>
           <Link className="h-10 flex items-center" href="/contact">Contact</Link>
           <Link className="h-10 flex items-center" href="/links">Links</Link>
           <Link className="h-10 flex items-center" href="/test-portfolio">Test Portfolio</Link>
@@ -77,7 +76,6 @@ export default function Navbar() {
             <div className="py-4">
               <div className="grid gap-2 text-lg text-white/95">
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/music" onClick={() => setOpen(false)}>Music</Link>
-                <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/videos" onClick={() => setOpen(false)}>Videos</Link>
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/contact" onClick={() => setOpen(false)}>Contact</Link>
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/links" onClick={() => setOpen(false)}>Links</Link>
                 <Link className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/25 active:bg-white/30 border border-white/15 backdrop-blur-md" href="/test-portfolio" onClick={() => setOpen(false)}>Test Portfolio</Link>
