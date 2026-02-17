@@ -57,7 +57,7 @@ export default function HomePage() {
   return (
     <div className="md:snap-container md:h-[100svh] md:overflow-y-scroll">
       {/* Hero */}
-      <Section>
+      <Section className="py-0 sm:py-0 md:py-0">
         <ParallaxHero
           bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png"
           strength={140}
