@@ -9,6 +9,28 @@ html, body { background:#0B0B0C; color:#ECECEC; overflow-x: hidden; overscroll-b
 .snap-container { scroll-snap-type: y mandatory; }
 .snap-section { scroll-snap-align: start; min-height: 100svh; }
 
+@keyframes scroll-cue-fade {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(5px);
+  }
+}
+
+.scroll-cue {
+  animation: scroll-cue-fade 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue {
+    animation: none;
+  }
+}
+
 @keyframes celebrate-burst {
   0% {
     opacity: 0;
