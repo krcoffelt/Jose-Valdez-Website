@@ -6,7 +6,7 @@ export default function Section({
   className?: string;
 }) {
   return (
-    <section className={`relative flex items-center py-6 sm:py-8 md:py-2 md:snap-section md:min-h-[82svh] ${className ?? ""}`}>
+    <section className={`relative flex items-center py-4 sm:py-6 md:py-1 md:snap-section md:min-h-[64svh] ${className ?? ""}`}>
       {children}
     </section>
   );
