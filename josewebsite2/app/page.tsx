@@ -101,6 +101,21 @@ export default function HomePage() {
         </div>
       </Section>
 
+      {/* New Release Video */}
+      <Section>
+        <div className="mx-auto w-[min(1100px,92vw)] text-center">
+          <h3 className="text-2xl mb-4">New Release</h3>
+          <div className="max-w-[860px] mx-auto">
+            <YouTubeEmbed
+              id="zvV6ut_fiRY"
+              title="New Release Video"
+              className="rounded-2xl"
+              responsive
+            />
+          </div>
+        </div>
+      </Section>
+
       {/* Newsletter CTA */}
       <Section>
         <div className="mx-auto w-[min(800px,92vw)] text-center space-y-4">

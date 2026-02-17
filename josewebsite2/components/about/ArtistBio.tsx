@@ -32,7 +32,7 @@ export default function ArtistBio() {
             </p>
             <footer className="flex items-center justify-end gap-4 text-sm text-neutral-400 md:text-base">
               <span className="hidden h-px w-20 bg-white/20 md:block" aria-hidden />
-              <span>— José Valdez</span>
+              <span>— JOSÉ ISAÍ VALDEZ</span>
             </footer>
           </blockquote>
         </article>
