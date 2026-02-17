@@ -61,11 +61,11 @@ export default function HomePage() {
         <ParallaxHero
           bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png"
           strength={140}
-          className="items-center md:items-start"
+          className="items-center justify-center"
         >
-          <div className="mx-auto w-full max-w-[1120px] relative">
+          <div className="mx-auto w-full max-w-[1120px]">
             <UnicornStudioEmbed projectId="iVXTIfZoqklHj97GYjkR" aspect={21 / 9} />
-            <p className="md:absolute md:left-1/2 md:-translate-x-1/2 md:bottom-[16%] text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
+            <p className="mt-4 text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
               Psalm 105:1–2
             </p>
           </div>
