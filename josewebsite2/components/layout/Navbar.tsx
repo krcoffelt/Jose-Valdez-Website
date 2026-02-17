@@ -35,7 +35,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-bg/75 backdrop-blur border-b border-white/5 pt-[env(safe-area-inset-top)]">
       <nav className="mx-auto w-[min(1100px,92vw)] h-14 flex items-center gap-4 px-1">
-        <Link href="/" className="font-semibold tracking-tight text-lg">JOSE VALDEZ</Link>
+        <Link href="/" className="font-semibold tracking-tight text-lg">JOSÉ ISAÍ VALDEZ</Link>
         {/* Desktop nav */}
         <div className="hidden md:flex flex-1 items-center justify-end gap-6 text-sm text-neutral-300">
           <Link className={navLinkClass} href="/music">Music</Link>
