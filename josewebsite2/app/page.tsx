@@ -73,7 +73,7 @@ export default function HomePage() {
       </Section>
 
       {/* New Release Video */}
-      <Section className="pt-8 sm:pt-10 md:pt-6">
+      <Section className="pt-12 sm:pt-14 md:pt-10">
         <div className="mx-auto w-[min(1100px,92vw)] text-center">
           <h3 className="text-2xl mb-4">New Release</h3>
           <div className="max-w-[860px] mx-auto">
