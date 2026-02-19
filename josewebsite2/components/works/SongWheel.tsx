@@ -27,8 +27,9 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   const audio = useAudio();
   const railRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const centersRef = useRef<number[]>([]);
+  const stepRef = useRef(0);
   const [active, setActive] = useState(0);
-  const [step, setStep] = useState(0);
   const [flipped, setFlipped] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -91,22 +92,45 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   useLayoutEffect(() => {
     const rail = railRef.current;
     if (!rail) return;
-    // Measure step between cards and center on the middle block
-    const children = Array.from(rail.children) as HTMLElement[];
-    if (children.length >= 2) {
-      const s = children[1].offsetLeft - children[0].offsetLeft;
-      setStep(s);
+
+    let raf = 0;
+    const measure = (recenter: boolean) => {
+      const children = Array.from(rail.children) as HTMLElement[];
+      if (!children.length) {
+        centersRef.current = [];
+        stepRef.current = 0;
+        return;
+      }
+
+      centersRef.current = children.map((child) => child.offsetLeft + child.clientWidth / 2);
+      stepRef.current = children.length >= 2 ? children[1].offsetLeft - children[0].offsetLeft : 0;
+
+      if (!recenter || items.length === 0) return;
       // Center on the first item in the middle block so that
       // start is Song 1 with neighbors 10 and 2 visible.
       const startIndex = items.length * Math.floor(LOOP / 2);
-      const el = children[startIndex];
-      if (el) {
-        const target = el.offsetLeft + el.clientWidth / 2 - rail.clientWidth / 2;
-        rail.scrollLeft = target;
-        setActive(startIndex);
-      }
-    }
-  }, [items.length]);
+      const center = centersRef.current[startIndex];
+      if (center === undefined) return;
+      rail.scrollLeft = center - rail.clientWidth / 2;
+      setActive(startIndex);
+    };
+
+    const scheduleMeasure = (recenter = false) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => measure(recenter));
+    };
+
+    scheduleMeasure(true);
+
+    const resizeObserver = new ResizeObserver(() => scheduleMeasure(false));
+    resizeObserver.observe(rail);
+    Array.from(rail.children).forEach((child) => resizeObserver.observe(child));
+
+    return () => {
+      cancelAnimationFrame(raf);
+      resizeObserver.disconnect();
+    };
+  }, [items.length, extended.length]);
 
   useEffect(() => {
     const rail = railRef.current;
@@ -115,12 +139,12 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
+        const centers = centersRef.current;
+        if (!centers.length) return;
         const currentMid = rail.scrollLeft + rail.clientWidth / 2;
-        const children = Array.from(rail.children) as HTMLElement[];
         let best = 0;
         let bestDist = Number.POSITIVE_INFINITY;
-        children.forEach((child, i) => {
-          const center = child.offsetLeft + child.clientWidth / 2;
+        centers.forEach((center, i) => {
           const d = Math.abs(center - currentMid);
           if (d < bestDist) {
             bestDist = d;
@@ -128,13 +152,12 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           }
         });
         setActive(best);
-        if (flipped !== null && best !== flipped) setFlipped(null);
 
         // Looping: jump by one block when near the ends
-        if (step > 0 && items.length > 0) {
-          const blockSize = step * items.length;
+        if (stepRef.current > 0 && items.length > 0) {
+          const blockSize = stepRef.current * items.length;
           const minX = blockSize * 0.5;
-          const maxX = step * (items.length * (LOOP - 0.5));
+          const maxX = stepRef.current * (items.length * (LOOP - 0.5));
           if (rail.scrollLeft < minX) {
             rail.scrollLeft += blockSize;
           } else if (rail.scrollLeft > maxX) {
@@ -149,7 +172,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       rail.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [items.length, step, flipped]);
+  }, [items.length]);
 
   // Scroll is trackpad/mouse/touch only; arrows removed per design
 
@@ -157,9 +180,10 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
   function centerAndFlip(i: number) {
     const rail = railRef.current;
-    const el = rail?.children?.[i] as HTMLElement | undefined;
-    if (!rail || !el) return;
-    const target = el.offsetLeft + el.clientWidth / 2 - rail.clientWidth / 2;
+    if (!rail) return;
+    const center = centersRef.current[i];
+    if (center === undefined) return;
+    const target = center - rail.clientWidth / 2;
     const alreadyCentered = Math.abs(rail.scrollLeft - target) < 2;
     if (!alreadyCentered) {
       rail.scrollTo({ left: target, behavior: "smooth" });
@@ -220,24 +244,35 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
               key={`${card.id}-${i}`}
               className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
-              <button
-                type="button"
-                onClick={() => centerAndFlip(i)}
+              <div
                 className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
                   isActive ? "border-white/20" : "border-white/10"
                 } ${flipped === i ? 'is-flipped' : ''}`}
                 style={{ transform: `scale(${scale})` }}
-                aria-label={`Open ${card.title}`}
-                aria-pressed={flipped === i}
               >
                 {/* Front */}
-                <div className="absolute inset-0 front face">
-                  <Image src={card.cover} alt={card.title} fill sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px" className="object-cover" unoptimized />
+                <button
+                  type="button"
+                  onClick={() => centerAndFlip(i)}
+                  className="absolute inset-0 front face focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+                  aria-label={`Open ${card.title}`}
+                  aria-pressed={flipped === i}
+                  tabIndex={flipped === i ? -1 : 0}
+                >
+                  <Image
+                    src={card.cover}
+                    alt={card.title}
+                    fill
+                    sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px"
+                    className="object-cover"
+                    loading="lazy"
+                    quality={72}
+                  />
                   <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
                     <div className="text-white text-sm font-semibold leading-tight truncate">{card.title}</div>
                     {card.artist && <div className="text-white/90 text-xs truncate">{card.artist}</div>}
                   </div>
-                </div>
+                </button>
                 {/* Back */}
                 <div className="absolute inset-0 back face bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200 text-neutral-900 border border-black/10 p-4 flex flex-col">
                   <div className="flex items-start justify-between gap-3">
@@ -259,6 +294,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                           : "border-neutral-300 bg-neutral-200 text-neutral-400 cursor-not-allowed"
                       }`}
                       aria-label={playable ? `Play ${card.title}` : `Preview unavailable for ${card.title}`}
+                      tabIndex={flipped === i ? 0 : -1}
                     >
                       <Play className="h-4 w-4" />
                     </button>
@@ -288,6 +324,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                         href={card.platforms.apple}
                         target="_blank"
                         rel="noreferrer"
+                        tabIndex={flipped === i ? 0 : -1}
                       >
                         Apple Music
                       </a>
@@ -298,13 +335,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                         href={card.platforms.spotify}
                         target="_blank"
                         rel="noreferrer"
+                        tabIndex={flipped === i ? 0 : -1}
                       >
                         Spotify
                       </a>
                     )}
                   </div>
                 </div>
-              </button>
+              </div>
             </div>
           );
         })}
@@ -319,8 +357,16 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           transform-style: preserve-3d;
           transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
         }
-        .is-flipped .front { transform: rotateY(180deg); }
-        .is-flipped .back { transform: rotateY(0deg); }
+        .front { pointer-events: auto; }
+        .back { pointer-events: none; }
+        .is-flipped .front {
+          transform: rotateY(180deg);
+          pointer-events: none;
+        }
+        .is-flipped .back {
+          transform: rotateY(0deg);
+          pointer-events: auto;
+        }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .hide-scroll::-webkit-scrollbar { display: none; }
       `}</style>

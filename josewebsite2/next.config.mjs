@@ -1,7 +1,14 @@
 import { withContentlayer } from "next-contentlayer";
 
 const nextConfig = {
-  images: { domains: ["rlefyrqefcxiifzggwpi.supabase.co"] },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "rlefyrqefcxiifzggwpi.supabase.co",
+      },
+    ],
+  },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
   webpack: (config, { isServer }) => {
