@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { SongItem } from "@/components/works/SongWheel";
 
 const SongWheel = dynamic(() => import("@/components/works/SongWheel"), {
@@ -42,30 +42,11 @@ function SongWheelPlaceholder() {
 
 export default function SongWheelDeferred({ items }: { items: SongItem[] }) {
   const [shouldRender, setShouldRender] = useState(false);
-  const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (shouldRender) return;
-    const node = mountRef.current;
-    if (!node) return;
-    const root = document.querySelector(".snap-container");
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries.some(entry => entry.isIntersecting)) {
-          setShouldRender(true);
-          observer.disconnect();
-        }
-      },
-      { root: root instanceof Element ? root : null, rootMargin: "250px 0px" }
-    );
-    observer.observe(node);
-    // Fallback so the section never gets stuck on the placeholder if intersection misses.
-    const fallbackId = window.setTimeout(() => setShouldRender(true), 1200);
-    return () => {
-      window.clearTimeout(fallbackId);
-      observer.disconnect();
-    };
-  }, [shouldRender]);
+    const rafId = window.requestAnimationFrame(() => setShouldRender(true));
+    return () => window.cancelAnimationFrame(rafId);
+  }, []);
 
-  return <div ref={mountRef}>{shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder />}</div>;
+  return <div>{shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder />}</div>;
 }
