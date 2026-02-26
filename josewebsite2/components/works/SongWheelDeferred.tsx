@@ -26,7 +26,7 @@ function SongWheelPlaceholder() {
       </div>
 
       <div className="relative mx-auto w-full max-w-[min(1024px,95vw)] overflow-hidden py-6 md:py-4">
-        <div className="grid grid-flow-col auto-cols-[180px] md:auto-cols-[200px] lg:auto-cols-[240px] gap-5 md:gap-4 opacity-35">
+        <div className="grid grid-flow-col auto-cols-[180px] md:auto-cols-[200px] lg:auto-cols-[240px] gap-5 md:gap-4 opacity-35 justify-center">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
@@ -48,6 +48,7 @@ export default function SongWheelDeferred({ items }: { items: SongItem[] }) {
     if (shouldRender) return;
     const node = mountRef.current;
     if (!node) return;
+    const root = document.querySelector(".snap-container");
     const observer = new IntersectionObserver(
       entries => {
         if (entries.some(entry => entry.isIntersecting)) {
@@ -55,10 +56,15 @@ export default function SongWheelDeferred({ items }: { items: SongItem[] }) {
           observer.disconnect();
         }
       },
-      { rootMargin: "250px 0px" }
+      { root: root instanceof Element ? root : null, rootMargin: "250px 0px" }
     );
     observer.observe(node);
-    return () => observer.disconnect();
+    // Fallback so the section never gets stuck on the placeholder if intersection misses.
+    const fallbackId = window.setTimeout(() => setShouldRender(true), 1200);
+    return () => {
+      window.clearTimeout(fallbackId);
+      observer.disconnect();
+    };
   }, [shouldRender]);
 
   return <div ref={mountRef}>{shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder />}</div>;
