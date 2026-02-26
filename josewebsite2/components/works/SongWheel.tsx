@@ -43,7 +43,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   }, []);
 
   // Build an extended list to simulate infinite scrolling
-  const LOOP = 5; // odd number for a clear middle block
+  const LOOP = 3; // odd number for a clear middle block
   const extended = useMemo(() => Array.from({ length: LOOP }).flatMap(() => items), [items]);
   const audioQueue = useMemo(() => {
     const seen = new Set<string>();
@@ -124,10 +124,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
     const resizeObserver = new ResizeObserver(() => scheduleMeasure(false));
     resizeObserver.observe(rail);
-    Array.from(rail.children).forEach((child) => resizeObserver.observe(child));
+    const resizeHandler = () => scheduleMeasure(false);
+    window.addEventListener("resize", resizeHandler);
+    const settleId = window.setTimeout(() => scheduleMeasure(false), 250);
 
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resizeHandler);
+      window.clearTimeout(settleId);
       resizeObserver.disconnect();
     };
   }, [items.length, extended.length]);

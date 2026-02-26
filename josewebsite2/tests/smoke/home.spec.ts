@@ -16,7 +16,11 @@ test("home page smoke: no console errors and carousel interaction works", async 
   await expect(page.getByRole("link", { name: "JOSÉ ISAÍ VALDEZ" })).toBeVisible();
 
   const main = page.locator("main");
+  const portfolioHeading = main.getByRole("heading", { name: "Music Portfolio" }).first();
+  await portfolioHeading.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(450);
   const openCard = main.getByRole("button", { name: /^Open / }).first();
+  await expect(openCard).toBeVisible({ timeout: 15_000 });
   await openCard.scrollIntoViewIfNeeded();
   await openCard.click();
   await page.waitForTimeout(450);

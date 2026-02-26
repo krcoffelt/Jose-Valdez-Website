@@ -4,7 +4,8 @@ import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
 import { youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
 import ParallaxHero from "@/components/hero/ParallaxHero";
 import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
-import SongWheel, { type SongItem } from "@/components/works/SongWheel";
+import type { SongItem } from "@/components/works/SongWheel";
+import SongWheelDeferred from "@/components/works/SongWheelDeferred";
 import { allReleases } from "@contentlayer";
 import type { Release } from "@contentlayer";
 import { placeholderWorks } from "@/data/works/placeholders";
@@ -60,11 +61,20 @@ export default function HomePage() {
       <Section className="py-0 sm:py-0 md:py-0">
         <ParallaxHero
           bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png"
+          bgSrcOptimized={{
+            src: "/images/hero-bg.avif",
+            fallbackSrc: "/images/hero-bg.webp",
+          }}
+          bgSizes="100vw"
           strength={140}
           className="items-center justify-center"
         >
           <div className="mx-auto w-full max-w-[1120px]">
-            <UnicornStudioEmbed projectId="iVXTIfZoqklHj97GYjkR" aspect={21 / 9} />
+            <UnicornStudioEmbed
+              projectId="iVXTIfZoqklHj97GYjkR"
+              aspect={21 / 9}
+              posterSrc="/images/hero-bg.webp"
+            />
             <p className="mt-4 text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
               Psalm 105:1–2
             </p>
@@ -95,7 +105,7 @@ export default function HomePage() {
       {/* Music Portfolio — Song Wheel */}
       {wheelItems.length > 0 && (
         <Section>
-          <SongWheel items={wheelItems} />
+          <SongWheelDeferred items={wheelItems} />
         </Section>
       )}
 

@@ -4,20 +4,33 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { AudioProvider } from "@/components/audio/AudioProvider";
 
+const siteUrl = "https://josevaldez.netlify.app";
+const shareImagePath = "/images/hero-bg.webp";
+const shareImageUrl = `${siteUrl}${shareImagePath}`;
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "JOSÉ — Official Site",
   description: "Music, videos, and updates.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
   openGraph: {
     title: "JOSÉ — Official Site",
     description: "Music, videos, and updates.",
     type: "website",
-    url: "https://josevaldez.netlify.app",
+    url: siteUrl,
     images: [
       {
-        url: "https://rlefyrqefcxiifzggwpi.supabase.co/storage/v1/object/public/Photos/Screenshot%202025-09-22%20at%2012.04.29%20PM.png",
-        width: 1600,
-        height: 900,
-        alt: "JOSÉ performing live",
+        url: shareImageUrl,
+        width: 1536,
+        height: 1024,
+        alt: "JOSÉ official image",
       },
     ],
   },
@@ -25,9 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "JOSÉ — Official Site",
     description: "Music, videos, and updates.",
-    images: [
-      "https://rlefyrqefcxiifzggwpi.supabase.co/storage/v1/object/public/Photos/Screenshot%202025-09-22%20at%2012.04.29%20PM.png",
-    ],
+    images: [shareImageUrl],
   },
 };
 

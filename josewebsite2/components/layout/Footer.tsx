@@ -1,14 +1,8 @@
 import { socialLinks } from "@/data/links/social";
+import Image from "next/image";
 import Link from "next/link";
-import { Facebook, Instagram, Music2, PlayCircle, Youtube } from "lucide-react";
 
-const iconMap = {
-  instagram: Instagram,
-  facebook: Facebook,
-  apple: Music2,
-  spotify: Music2,
-  youtube: Youtube,
-} as const;
+const socialIconSrc = "/images/social-avatar.webp";
 
 export default function Footer() {
   return (
@@ -19,7 +13,6 @@ export default function Footer() {
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3 text-base text-white/90">
           {socialLinks.map((link) => {
-            const Icon = iconMap[link.icon] ?? PlayCircle;
             return (
               <a
                 key={link.id}
@@ -28,7 +21,9 @@ export default function Footer() {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm transition hover:border-white/30 hover:bg-white/10"
               >
-                <Icon className="h-4 w-4" />
+                <span className="relative h-4 w-4 overflow-hidden rounded-[2px]">
+                  <Image src={socialIconSrc} alt={`${link.label} icon`} fill sizes="16px" className="object-cover" />
+                </span>
                 <span>{link.label}</span>
               </a>
             );
