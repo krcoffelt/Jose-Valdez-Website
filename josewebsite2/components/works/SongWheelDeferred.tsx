@@ -48,5 +48,5 @@ export default function SongWheelDeferred({ items }: { items: SongItem[] }) {
     return () => window.cancelAnimationFrame(rafId);
   }, []);
 
-  return <div>{shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder />}</div>;
+  return shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder />;
 }
