@@ -67,7 +67,7 @@ export default function HomePage() {
           }}
           bgSizes="100vw"
           strength={140}
-          className="items-center justify-center"
+          className="items-center justify-center md:min-h-[calc(80svh-3.5rem)]"
         >
           <div className="mx-auto w-full max-w-[1120px]">
             <UnicornStudioEmbed
@@ -83,7 +83,7 @@ export default function HomePage() {
       </Section>
 
       {/* New Release Video */}
-      <Section className="pt-12 sm:pt-14 md:pt-10">
+      <Section className="pt-12 sm:pt-14 md:pt-4">
         <div className="mx-auto w-[min(1100px,92vw)] text-center">
           <h3 className="text-2xl mb-4">New Release</h3>
           <div className="max-w-[860px] mx-auto">
