@@ -13,7 +13,7 @@ export default function Section({
 
   return (
     <motion.section
-      className={`relative flex items-center py-4 sm:py-6 md:py-1 md:snap-section md:min-h-[64svh] ${className ?? ""}`}
+      className={`relative flex items-center py-2 sm:py-4 md:py-0 md:snap-section md:min-h-[58svh] ${className ?? ""}`}
       initial={prefersReducedMotion ? undefined : { opacity: 0, y: 26 }}
       whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
