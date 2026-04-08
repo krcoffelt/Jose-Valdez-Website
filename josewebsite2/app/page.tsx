@@ -90,7 +90,7 @@ export default function HomePage() {
               <p className="text-[11px] uppercase tracking-[0.35em] text-neutral-500">Latest Music</p>
               <h3 className="text-2xl md:text-3xl">New Releases</h3>
               <p className="max-w-2xl text-sm text-neutral-400">
-                Recent collaborations and live recordings, ready to preview without leaving the homepage.
+                Recent Collaborations and Live Recordings
               </p>
             </div>
           </div>
@@ -127,13 +127,13 @@ export default function HomePage() {
       </Section>
 
       {/* About / Bio */}
-      <Section>
+      <Section className="pb-1 sm:pb-2 md:pb-0">
         <ArtistBio />
       </Section>
 
       {/* Music Portfolio — Song Wheel */}
       {wheelItems.length > 0 && (
-        <Section>
+        <Section className="pt-1 sm:pt-2 md:pt-0">
           <SongWheelDeferred items={wheelItems} />
         </Section>
       )}
