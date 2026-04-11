@@ -29,8 +29,21 @@ export default function Footer() {
             );
           })}
         </div>
-        <div className="text-center text-neutral-500">
-          © {new Date().getFullYear()} <Link href="/" className="tracking-tight text-white hover:underline">JOSÉ</Link>
+        <div className="space-y-2 text-center text-neutral-500">
+          <div>
+            © {new Date().getFullYear()} <Link href="/" className="tracking-tight text-white hover:underline">JOSÉ</Link>
+          </div>
+          <div className="text-xs uppercase tracking-[0.28em] text-neutral-600">
+            Website by{" "}
+            <a
+              href="https://hometown.agency"
+              target="_blank"
+              rel="noreferrer"
+              className="text-neutral-300 transition hover:text-white hover:underline"
+            >
+              Hometown Marketing Agency
+            </a>
+          </div>
         </div>
       </div>
     </footer>
