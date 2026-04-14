@@ -43,7 +43,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   }, []);
 
   // Build an extended list to simulate infinite scrolling
-  const LOOP = 3; // odd number for a clear middle block
+  const LOOP = 5; // larger middle runway reduces visible loop resets
   const extended = useMemo(() => Array.from({ length: LOOP }).flatMap(() => items), [items]);
   const audioQueue = useMemo(() => {
     const seen = new Set<string>();
@@ -234,7 +234,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
 
       <div
         ref={railRef}
-        className="relative mx-auto w-full max-w-[min(1024px,95vw)] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-6 md:py-4 px-1 md:px-0 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-mandatory md:snap-none"
+        className="relative mx-auto w-full max-w-[min(1024px,95vw)] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-6 md:py-4 px-1 md:px-0 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-proximity md:snap-none"
       >
         {extended.map((card, i) => {
           const isActive = i === active;

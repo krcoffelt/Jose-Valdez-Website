@@ -89,7 +89,7 @@ export default function HomePage() {
       </Section>
 
       {/* New Releases */}
-      <Section className="pt-14 sm:pt-16 md:pt-8">
+      <Section className="pt-16 sm:pt-20 md:pt-12">
         <div className="mx-auto w-[min(1320px,96vw)] space-y-6">
           <div className="flex flex-col gap-3 text-left md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
