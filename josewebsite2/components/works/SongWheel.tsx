@@ -29,11 +29,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const centersRef = useRef<number[]>([]);
   const stepRef = useRef(0);
+  const activeRef = useRef(0);
+  const scrollSettleRef = useRef<number | null>(null);
   const [active, setActive] = useState(0);
   const [flipped, setFlipped] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [canHover, setCanHover] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -129,6 +132,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       const center = centersRef.current[startIndex];
       if (center === undefined) return;
       rail.scrollLeft = center - rail.clientWidth / 2;
+      activeRef.current = startIndex;
       setActive(startIndex);
     };
 
@@ -150,6 +154,9 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       window.removeEventListener("resize", resizeHandler);
       window.clearTimeout(settleId);
       resizeObserver.disconnect();
+      if (scrollSettleRef.current) {
+        window.clearTimeout(scrollSettleRef.current);
+      }
     };
   }, [items.length, extended.length]);
 
@@ -172,7 +179,10 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
             best = i;
           }
         });
-        setActive(best);
+        if (activeRef.current !== best) {
+          activeRef.current = best;
+          setActive(best);
+        }
 
         // Looping: jump by one block when near the ends
         if (stepRef.current > 0 && items.length > 0) {
@@ -185,6 +195,15 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
             rail.scrollLeft -= blockSize;
           }
         }
+
+        setIsScrolling(true);
+        if (scrollSettleRef.current) {
+          window.clearTimeout(scrollSettleRef.current);
+        }
+        scrollSettleRef.current = window.setTimeout(() => {
+          setIsScrolling(false);
+          scrollSettleRef.current = null;
+        }, 110);
       });
     };
     rail.addEventListener("scroll", onScroll, { passive: true });
@@ -192,6 +211,10 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     return () => {
       rail.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
+      if (scrollSettleRef.current) {
+        window.clearTimeout(scrollSettleRef.current);
+        scrollSettleRef.current = null;
+      }
     };
   }, [items.length]);
 
@@ -256,6 +279,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
         {extended.map((card, i) => {
           const isActive = i === active;
           const isHovered = canHover && hovered === i;
+          const shouldAnimateCard = !isScrolling || isHovered || flipped === i;
           const scale = isMobile
             ? (isActive ? 1.2 : 0.92)
             : isActive
@@ -280,13 +304,14 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
               }}
             >
               <div
-                className={`relative h-full w-full rounded-2xl overflow-hidden border transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
+                className={`relative h-full w-full rounded-2xl overflow-hidden border transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
                   isActive
                     ? "border-white/22 shadow-[0_18px_45px_rgba(0,0,0,0.38)]"
                     : isHovered
                       ? "border-white/20 shadow-[0_16px_38px_rgba(0,0,0,0.34)]"
                       : "border-white/10 shadow-soft"
                 } ${flipped === i ? 'is-flipped' : ''}`}
+                data-scrolling={shouldAnimateCard ? "false" : "true"}
                 style={{ transform: `translateY(${translateY}px) scale(${scale})`, transformOrigin: "center center" }}
               >
                 {/* Front */}
@@ -394,6 +419,17 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       </div>
       <style jsx>{`
         .perspective { perspective: 1200px; }
+        [data-scrolling="false"] {
+          transition:
+            transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        [data-scrolling="true"] {
+          transition:
+            border-color 180ms ease-out,
+            box-shadow 180ms ease-out;
+        }
         .front { transform: rotateY(0deg); }
         .back { transform: rotateY(180deg); }
         .face {
