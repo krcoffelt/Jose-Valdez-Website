@@ -120,7 +120,7 @@ export default function HomePage() {
                     href={`https://www.youtube.com/watch?v=${video.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center rounded-full border border-white/12 bg-white/8 px-4 py-2 text-sm text-white transition hover:border-white/25 hover:bg-white/12"
+                    className="inline-flex items-center rounded-full border border-[#C9A362]/70 bg-[#C9A362] px-4 py-2 text-sm text-white transition hover:border-[#d6b277] hover:bg-[#d6b277]"
                   >
                     Watch on YouTube
                   </a>
