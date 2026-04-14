@@ -24,6 +24,12 @@ export const youtubeMusicVideos: YouTubeMusicVideo[] = [
     id: "czj7EDqqw60",
     note: "Official live studio performance.",
   },
+  {
+    title: "Hands Up",
+    artist: "Alexander Pappas",
+    id: "zvV6ut_fiRY",
+    note: "Official release video.",
+  },
 ];
 
 export const featuredHomeVideo = {

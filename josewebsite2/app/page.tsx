@@ -60,12 +60,9 @@ export default function HomePage() {
       {/* Hero */}
       <Section className="py-0 sm:py-0 md:py-0">
         <ParallaxHero
-          bgSrc="/images/ChatGPT Image Sep 16, 2025, 01_18_48 PM.png"
-          bgSrcOptimized={{
-            src: "/images/hero-bg.avif",
-            fallbackSrc: "/images/hero-bg.webp",
-          }}
+          bgSrc="/images/Facetune_08-04-2026-21-54-18.JPG"
           bgSizes="100vw"
+          imagePosition="center 24%"
           strength={140}
           className="items-center justify-center md:min-h-[calc(80svh-3.5rem)]"
         >
@@ -73,11 +70,16 @@ export default function HomePage() {
             <UnicornStudioEmbed
               projectId="iVXTIfZoqklHj97GYjkR"
               aspect={21 / 9}
-              posterSrc="/images/hero-bg.webp"
             />
-            <p className="mt-4 text-neutral-300 text-3xl md:text-4xl leading-tight pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
-              Psalm 105:1–2
-            </p>
+            <div className="mx-auto mt-6 max-w-[920px] space-y-3 px-4 text-center pointer-events-none">
+              <p className="text-[11px] uppercase tracking-[0.42em] text-neutral-200/80 md:text-xs">
+                PSALMS 105
+              </p>
+              <blockquote className="text-lg leading-relaxed text-neutral-100 md:text-3xl md:leading-[1.35] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+                &quot;Give thanks to the Lord and proclaim his greatness. Let the whole world know what he has
+                done. Sing to him; yes, sing his praises. Tell everyone about his wonderful deeds.&quot;
+              </blockquote>
+            </div>
           </div>
         </ParallaxHero>
       </Section>

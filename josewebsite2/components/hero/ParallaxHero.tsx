@@ -13,6 +13,7 @@ type Props = {
   bgSrcOptimized?: HeroSource;
   bgSrcSet?: string;
   bgSizes?: string;
+  imagePosition?: string;
   strength?: number; // max pixels to translate background upwards
   overlay?: boolean;
   children: React.ReactNode;
@@ -24,6 +25,7 @@ export default function ParallaxHero({
   bgSrcOptimized,
   bgSrcSet,
   bgSizes = "100vw",
+  imagePosition = "center",
   strength = 140,
   overlay = true,
   children,
@@ -47,7 +49,7 @@ export default function ParallaxHero({
         {bgSrcSet ? (
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `image-set(${bgSrcSet})` }}
+            style={{ backgroundImage: `image-set(${bgSrcSet})`, backgroundPosition: imagePosition }}
           />
         ) : (
           <Image
@@ -59,6 +61,7 @@ export default function ParallaxHero({
             fetchPriority="high"
             sizes={bgSizes}
             className="object-cover object-center"
+            style={{ objectPosition: imagePosition }}
           />
         )}
       </motion.div>
