@@ -32,6 +32,8 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
   const [active, setActive] = useState(0);
   const [flipped, setFlipped] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [canHover, setCanHover] = useState(false);
+  const [hovered, setHovered] = useState<number | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -41,6 +43,21 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
     mq.addEventListener?.("change", update);
     return () => mq.removeEventListener?.("change", update);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setCanHover(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!canHover) {
+      setHovered(null);
+    }
+  }, [canHover]);
 
   // Build an extended list to simulate infinite scrolling
   const LOOP = 5; // larger middle runway reduces visible loop resets
@@ -227,7 +244,7 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
         <div className="hidden md:flex items-center gap-2 text-sm text-neutral-400">
           <span className="flex items-center gap-1">
             <span className="h-1 w-6 rounded-full bg-white/20 animate-pulse" aria-hidden />
-            Scroll to explore the catalog
+            Scroll or hover to explore the catalog
           </span>
         </div>
       </div>
@@ -238,7 +255,13 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
       >
         {extended.map((card, i) => {
           const isActive = i === active;
-          const scale = isActive ? (isMobile ? 1.2 : 1.1) : 0.92;
+          const isHovered = canHover && hovered === i;
+          const scale = isMobile
+            ? (isActive ? 1.2 : 0.92)
+            : isActive
+              ? (isHovered ? 1.135 : 1.1)
+              : (isHovered ? 0.98 : 0.92);
+          const translateY = !isMobile && isHovered ? -8 : 0;
           const baseIndex = i % items.length;
           const baseItem = items[baseIndex];
           const playable = Boolean(baseItem?.audioSrc);
@@ -249,10 +272,22 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
               className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
             >
               <div
-                className={`relative h-full w-full rounded-2xl overflow-hidden border shadow-soft transition-transform duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
-                  isActive ? "border-white/20" : "border-white/10"
+                className={`relative h-full w-full rounded-2xl overflow-hidden border transition-[transform,border-color,box-shadow] duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
+                  isActive
+                    ? "border-white/22 shadow-[0_18px_45px_rgba(0,0,0,0.38)]"
+                    : isHovered
+                      ? "border-white/20 shadow-[0_16px_38px_rgba(0,0,0,0.34)]"
+                      : "border-white/10 shadow-soft"
                 } ${flipped === i ? 'is-flipped' : ''}`}
-                style={{ transform: `scale(${scale})` }}
+                style={{ transform: `translateY(${translateY}px) scale(${scale})` }}
+                onMouseEnter={() => {
+                  if (!canHover) return;
+                  setHovered(i);
+                }}
+                onMouseLeave={() => {
+                  if (!canHover) return;
+                  setHovered((prev) => (prev === i ? null : prev));
+                }}
               >
                 {/* Front */}
                 <button
@@ -268,12 +303,20 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                     alt={card.title}
                     fill
                     sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px"
-                    className="object-cover"
+                    className={`object-cover transition duration-300 ease-out ${
+                      isHovered ? "brightness-[1.08] saturate-[1.06]" : "brightness-[0.96]"
+                    }`}
                     loading="lazy"
                     quality={72}
                   />
-                  <div className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]">
-                    <div className="text-white text-sm font-semibold leading-tight truncate">{card.title}</div>
+                  <div
+                    className={`absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)] transition duration-300 ease-out ${
+                      isHovered ? "translate-y-[-2px]" : ""
+                    }`}
+                  >
+                    <div className={`text-sm font-semibold leading-tight truncate transition-colors duration-300 ${
+                      isHovered ? "text-[#fff3d6]" : "text-white"
+                    }`}>{card.title}</div>
                     {card.artist && <div className="text-white/90 text-xs truncate">{card.artist}</div>}
                   </div>
                 </button>
