@@ -4,7 +4,6 @@ import YouTubeEmbed from "@/components/embeds/YouTubeEmbed";
 import VideoLightEmbed from "@/components/video/VideoLightEmbed";
 import { featuredHomeVideo, youtubeMusicVideos } from "@/data/embeds/youtube-music-videos";
 import ParallaxHero from "@/components/hero/ParallaxHero";
-import UnicornStudioEmbed from "@/components/embeds/UnicornStudioEmbed";
 import type { SongItem } from "@/components/works/SongWheel";
 import SongWheelDeferred from "@/components/works/SongWheelDeferred";
 import { allReleases } from "@contentlayer";
@@ -64,14 +63,18 @@ export default function HomePage() {
           bgSizes="100vw"
           imagePosition="center 24%"
           strength={140}
-          className="items-center justify-center md:min-h-[calc(80svh-3.5rem)]"
+          className="items-center justify-center md:min-h-[calc(90svh-3.5rem)]"
         >
-          <div className="mx-auto w-full max-w-[1120px]">
-            <UnicornStudioEmbed
-              projectId="iVXTIfZoqklHj97GYjkR"
-              aspect={21 / 9}
-            />
-            <div className="mx-auto mt-6 max-w-[920px] space-y-3 px-4 text-center pointer-events-none">
+          <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center justify-center">
+            <div className="mx-auto flex min-h-[48svh] w-full max-w-[1180px] flex-col items-center justify-center gap-4 px-4 text-center md:min-h-[54svh] md:gap-5">
+              <div>
+                <h1 className="text-[clamp(9rem,34vw,24rem)] font-black uppercase leading-[0.74] tracking-[-0.09em] text-white drop-shadow-[0_10px_36px_rgba(0,0,0,0.6)]">
+                  JOSÉ
+                </h1>
+              </div>
+            </div>
+            <div className="mx-auto mt-2 flex w-full max-w-[980px] justify-center px-4 text-center pointer-events-none">
+              <div className="space-y-3">
               <p className="text-[11px] uppercase tracking-[0.42em] text-neutral-200/80 md:text-xs">
                 PSALMS 105
               </p>
@@ -79,6 +82,7 @@ export default function HomePage() {
                 &quot;Give thanks to the Lord and proclaim his greatness. Let the whole world know what he has
                 done. Sing to him; yes, sing his praises. Tell everyone about his wonderful deeds.&quot;
               </blockquote>
+              </div>
             </div>
           </div>
         </ParallaxHero>
@@ -86,10 +90,9 @@ export default function HomePage() {
 
       {/* New Releases */}
       <Section className="pt-12 sm:pt-14 md:pt-4">
-        <div className="mx-auto w-[min(1180px,94vw)] space-y-6">
+        <div className="mx-auto w-[min(1320px,96vw)] space-y-6">
           <div className="flex flex-col gap-3 text-left md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-[0.35em] text-neutral-500">Latest Music</p>
               <h3 className="text-2xl md:text-3xl">New Releases</h3>
               <p className="max-w-2xl text-sm text-neutral-400">
                 Recent Collaborations and Live Recordings
@@ -97,7 +100,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-2">
             {youtubeMusicVideos.map((video) => (
               <article
                 key={video.id}
@@ -108,9 +111,9 @@ export default function HomePage() {
                   title={`${video.title} by ${video.artist}`}
                   className="rounded-none"
                 />
-                <div className="space-y-2 p-5 text-left">
+                <div className="space-y-2 p-5 text-left md:p-6">
                   <div className="text-[11px] uppercase tracking-[0.28em] text-neutral-500">Video Release</div>
-                  <h4 className="text-xl font-semibold text-white">{video.title}</h4>
+                  <h4 className="text-xl font-semibold text-white md:text-2xl">{video.title}</h4>
                   <p className="text-sm text-neutral-300">{video.artist}</p>
                   {video.note && <p className="text-sm text-neutral-400">{video.note}</p>}
                   <a

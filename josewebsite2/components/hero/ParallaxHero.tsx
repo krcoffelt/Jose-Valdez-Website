@@ -71,13 +71,13 @@ export default function ParallaxHero({
       )}
 
       {/* Foreground content */}
-      <div className="relative z-20 mx-auto w-[min(1400px,96vw)] text-center">
+      <div className="relative z-20 mx-auto w-[min(1400px,96vw)] px-4 pb-20 pt-8 text-center md:pb-28 md:pt-10">
         {children}
       </div>
 
       {/* Scroll cue */}
       {inView && (
-        <div aria-hidden className="pointer-events-none absolute bottom-5 left-1/2 z-30 -translate-x-1/2">
+        <div aria-hidden className="pointer-events-none absolute bottom-4 left-1/2 z-30 -translate-x-1/2 md:bottom-7">
           <div className="scroll-cue inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-black/25 text-white/85 backdrop-blur-sm">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m6 9 6 6 6-6" />

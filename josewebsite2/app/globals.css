@@ -5,9 +5,35 @@
 :root { color-scheme: dark; }
 html, body { background:#0B0B0C; color:#ECECEC; overflow-x: hidden; overscroll-behavior-x: none; }
 .nav-open, .nav-open body { overflow: hidden; }
+.site-loader-active { overflow: hidden; }
 .no-tap-highlight, * { -webkit-tap-highlight-color: transparent; }
 .snap-container { scroll-snap-type: y mandatory; }
 .snap-section { scroll-snap-align: start; min-height: 100svh; }
+
+@keyframes loader-collapse-out {
+  0% {
+    transform: scaleY(1);
+  }
+  55% {
+    transform: scaleY(0.22);
+  }
+  100% {
+    transform: scaleY(0);
+  }
+}
+
+.loader-screen {
+  transform-origin: top center;
+}
+
+.loader-progress {
+  font-variant-numeric: tabular-nums;
+}
+
+.loader-collapse-out {
+  animation: loader-collapse-out 600ms cubic-bezier(0.77, 0, 0.18, 1) forwards;
+  transform-origin: top center;
+}
 
 @keyframes scroll-cue-fade {
   0%,

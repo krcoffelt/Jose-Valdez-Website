@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import SiteLoader from "@/components/layout/SiteLoader";
+import ScrollReset from "@/components/layout/ScrollReset";
 import { AudioProvider } from "@/components/audio/AudioProvider";
 
 const siteUrl = "https://josevaldez.netlify.app";
@@ -52,6 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-bg text-text">
+        <ScrollReset />
+        <SiteLoader />
         <AudioProvider>
           <Navbar />
           <main>{children}</main>
