@@ -259,9 +259,9 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           const scale = isMobile
             ? (isActive ? 1.2 : 0.92)
             : isActive
-              ? (isHovered ? 1.135 : 1.1)
-              : (isHovered ? 0.98 : 0.92);
-          const translateY = !isMobile && isHovered ? -8 : 0;
+              ? (isHovered ? 1.12 : 1.1)
+              : (isHovered ? 0.965 : 0.92);
+          const translateY = !isMobile && isHovered ? -4 : 0;
           const baseIndex = i % items.length;
           const baseItem = items[baseIndex];
           const playable = Boolean(baseItem?.audioSrc);
@@ -270,24 +270,24 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
             <div
               key={`${card.id}-${i}`}
               className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
+              onMouseEnter={() => {
+                if (!canHover) return;
+                setHovered(i);
+              }}
+              onMouseLeave={() => {
+                if (!canHover) return;
+                setHovered((prev) => (prev === i ? null : prev));
+              }}
             >
               <div
-                className={`relative h-full w-full rounded-2xl overflow-hidden border transition-[transform,border-color,box-shadow] duration-300 ease-out transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
+                className={`relative h-full w-full rounded-2xl overflow-hidden border transition-[transform,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
                   isActive
                     ? "border-white/22 shadow-[0_18px_45px_rgba(0,0,0,0.38)]"
                     : isHovered
                       ? "border-white/20 shadow-[0_16px_38px_rgba(0,0,0,0.34)]"
                       : "border-white/10 shadow-soft"
                 } ${flipped === i ? 'is-flipped' : ''}`}
-                style={{ transform: `translateY(${translateY}px) scale(${scale})` }}
-                onMouseEnter={() => {
-                  if (!canHover) return;
-                  setHovered(i);
-                }}
-                onMouseLeave={() => {
-                  if (!canHover) return;
-                  setHovered((prev) => (prev === i ? null : prev));
-                }}
+                style={{ transform: `translateY(${translateY}px) scale(${scale})`, transformOrigin: "center center" }}
               >
                 {/* Front */}
                 <button
@@ -303,18 +303,16 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
                     alt={card.title}
                     fill
                     sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px"
-                    className={`object-cover transition duration-300 ease-out ${
-                      isHovered ? "brightness-[1.08] saturate-[1.06]" : "brightness-[0.96]"
+                    className={`object-cover transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      isHovered ? "brightness-[1.03] saturate-[1.03]" : "brightness-[0.97]"
                     }`}
                     loading="lazy"
                     quality={72}
                   />
                   <div
-                    className={`absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)] transition duration-300 ease-out ${
-                      isHovered ? "translate-y-[-2px]" : ""
-                    }`}
+                    className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]"
                   >
-                    <div className={`text-sm font-semibold leading-tight truncate transition-colors duration-300 ${
+                    <div className={`text-sm font-semibold leading-tight truncate transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                       isHovered ? "text-[#fff3d6]" : "text-white"
                     }`}>{card.title}</div>
                     {card.artist && <div className="text-white/90 text-xs truncate">{card.artist}</div>}
