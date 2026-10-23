@@ -1,269 +1,183 @@
 "use client";
-import Image from "next/image";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { CalendarDays, Headphones, Music2, Play } from "lucide-react";
+
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useAudio } from "@/components/audio/AudioProvider";
+import SongWheelCard from "./SongWheelCard";
 
 export type SongItem = {
   id: string;
   title: string;
   artist?: string;
   cover: string;
-  date?: string; // ISO string (Release date)
+  date?: string;
   platforms?: { apple?: string; spotify?: string } | null;
   audioSrc?: string;
   release?: string;
   releaseSlug?: string;
 };
 
-const formatDate = (iso?: string) => {
-  if (!iso) return "";
-  const parsed = new Date(iso);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return parsed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-};
+const LOOP = 3;
 
 export default function SongWheel({ items }: { items: SongItem[] }) {
   const audio = useAudio();
+  const { setQueue, setDockVisible } = audio;
   const railRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const centersRef = useRef<number[]>([]);
   const stepRef = useRef(0);
+  const shellsRef = useRef<HTMLElement[]>([]);
+  const emphasizedRef = useRef(new Set<number>());
   const activeRef = useRef(0);
-  const scrollSettleRef = useRef<number | null>(null);
+  const flipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [active, setActive] = useState(0);
   const [flipped, setFlipped] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [canHover, setCanHover] = useState(false);
-  const [hovered, setHovered] = useState<number | null>(null);
-  const [isScrolling, setIsScrolling] = useState(false);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener?.("change", update);
-    return () => mq.removeEventListener?.("change", update);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const update = () => setCanHover(mq.matches);
-    update();
-    mq.addEventListener?.("change", update);
-    return () => mq.removeEventListener?.("change", update);
-  }, []);
-
-  useEffect(() => {
-    if (!canHover) {
-      setHovered(null);
-    }
-  }, [canHover]);
-
-  // Build an extended list to simulate infinite scrolling
-  const LOOP = 5; // larger middle runway reduces visible loop resets
   const extended = useMemo(() => Array.from({ length: LOOP }).flatMap(() => items), [items]);
   const audioQueue = useMemo(() => {
     const seen = new Set<string>();
-    return items
-      .filter((item) => Boolean(item.audioSrc))
-      .filter((item) => {
-        if (seen.has(item.id)) return false;
-        seen.add(item.id);
-        return true;
-      })
-      .map((item) => ({
-        id: item.id,
-        title: item.title,
-        artist: item.artist,
-        cover: item.cover,
-        src: item.audioSrc,
-      }));
+    return items.filter((item) => {
+      if (!item.audioSrc || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    }).map((item) => ({
+      id: item.id, title: item.title, artist: item.artist, cover: item.cover, src: item.audioSrc,
+    }));
   }, [items]);
 
   useEffect(() => {
-    if (!audioQueue.length) return;
-    if (audio.queue.length === 0) {
-      audio.setQueue(audioQueue, 0);
-    }
-  }, [audio, audioQueue]);
+    if (audioQueue.length && audio.queue.length === 0) setQueue(audioQueue, 0);
+  }, [audio.queue.length, audioQueue, setQueue]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     const node = containerRef.current;
     if (!node) return;
-    const observer = new IntersectionObserver(
-      entries => {
-        const entry = entries[0];
-        const shouldShow = Boolean((entry?.isIntersecting ?? false) && items.length > 0);
-        audio.setDockVisible(shouldShow);
-      },
-      { threshold: 0.35 }
-    );
+    const observer = new IntersectionObserver(([entry]) => {
+      setDockVisible(Boolean(entry?.isIntersecting && items.length));
+    }, { threshold: 0.35 });
     observer.observe(node);
-    return () => {
-      observer.disconnect();
-      audio.setDockVisible(false);
-    };
-  }, [audio, items.length]);
+    return () => { observer.disconnect(); setDockVisible(false); };
+  }, [items.length, setDockVisible]);
 
   useLayoutEffect(() => {
     const rail = railRef.current;
-    if (!rail) return;
+    if (!rail || !items.length) return;
+    const mobile = window.matchMedia("(max-width: 767px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
 
-    let raf = 0;
-    const measure = (recenter: boolean) => {
+    const update = () => {
+      frame = 0;
+      const centers = centersRef.current;
+      const step = stepRef.current;
+      if (!centers.length || !step) return;
+      const block = step * items.length;
+      let shift = 0;
+      // Rebase to the equivalent copy without animating the invisible loop jump.
+      if (block > rail.clientWidth) {
+        if (rail.scrollLeft < block * 0.5) shift = items.length;
+        else if (rail.scrollLeft > block * 1.5) shift = -items.length;
+      }
+      if (shift) {
+        rail.scrollLeft += shift * step;
+        setFlipped((previous) => previous === null ? null : previous + shift);
+      }
+      const middle = rail.scrollLeft + rail.clientWidth / 2;
+      const nearest = Math.max(0, Math.min(centers.length - 1, Math.round((middle - centers[0]) / step)));
+      if (activeRef.current !== nearest) {
+        activeRef.current = nearest;
+        setActive(nearest);
+      }
+
+      // Only nearby cards need a transform update; React does not render each frame.
+      const emphasized = new Set<number>();
+      for (let i = Math.max(0, nearest - 2); i <= Math.min(centers.length - 1, nearest + 2); i++) {
+        const distance = Math.min(1, Math.abs(centers[i] - middle) / step);
+        const weight = reduced.matches ? Number(i === nearest) : (1 + Math.cos(distance * Math.PI)) / 2;
+        const scale = 0.92 + ((mobile.matches ? 1.2 : 1.1) - 0.92) * weight;
+        shellsRef.current[i]?.style.setProperty("--wheel-scale", scale.toFixed(4));
+        emphasized.add(i);
+      }
+      emphasizedRef.current.forEach((i) => {
+        if (!emphasized.has(i)) shellsRef.current[i]?.style.setProperty("--wheel-scale", "0.92");
+      });
+      emphasizedRef.current = emphasized;
+    };
+    const scheduleUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const measure = () => {
+      const previousStep = stepRef.current;
+      const previousCenter = centersRef.current[activeRef.current];
+      const previousOffset = previousStep && previousCenter !== undefined
+        ? (rail.scrollLeft + rail.clientWidth / 2 - previousCenter) / previousStep
+        : 0;
       const children = Array.from(rail.children) as HTMLElement[];
-      if (!children.length) {
-        centersRef.current = [];
-        stepRef.current = 0;
-        return;
-      }
-
       centersRef.current = children.map((child) => child.offsetLeft + child.clientWidth / 2);
-      stepRef.current = children.length >= 2 ? children[1].offsetLeft - children[0].offsetLeft : 0;
-
-      if (!recenter || items.length === 0) return;
-      // Center on the first item in the middle block so that
-      // start is Song 1 with neighbors 10 and 2 visible.
-      const startIndex = items.length * Math.floor(LOOP / 2);
-      const center = centersRef.current[startIndex];
-      if (center === undefined) return;
-      rail.scrollLeft = center - rail.clientWidth / 2;
-      activeRef.current = startIndex;
-      setActive(startIndex);
+      shellsRef.current = children.map((child) => child.querySelector<HTMLElement>("[data-wheel-scale]")!);
+      stepRef.current = children[1] ? children[1].offsetLeft - children[0].offsetLeft : 0;
+      const index = previousStep ? activeRef.current : items.length;
+      const center = centersRef.current[index];
+      if (center !== undefined) rail.scrollLeft = center + previousOffset * stepRef.current - rail.clientWidth / 2;
+      scheduleUpdate();
     };
-
-    const scheduleMeasure = (recenter = false) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => measure(recenter));
-    };
-
-    scheduleMeasure(true);
-
-    const resizeObserver = new ResizeObserver(() => scheduleMeasure(false));
-    resizeObserver.observe(rail);
-    const resizeHandler = () => scheduleMeasure(false);
-    window.addEventListener("resize", resizeHandler);
-    const settleId = window.setTimeout(() => scheduleMeasure(false), 250);
-
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(rail);
+    rail.addEventListener("scroll", scheduleUpdate, { passive: true });
+    mobile.addEventListener("change", scheduleUpdate);
+    reduced.addEventListener("change", scheduleUpdate);
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resizeHandler);
-      window.clearTimeout(settleId);
-      resizeObserver.disconnect();
-      if (scrollSettleRef.current) {
-        window.clearTimeout(scrollSettleRef.current);
-      }
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      rail.removeEventListener("scroll", scheduleUpdate);
+      mobile.removeEventListener("change", scheduleUpdate);
+      reduced.removeEventListener("change", scheduleUpdate);
     };
   }, [items.length, extended.length]);
 
-  useEffect(() => {
+  useEffect(() => () => {
+    if (flipTimer.current) clearTimeout(flipTimer.current);
+  }, []);
+
+  const centerAndFlip = useCallback((index: number) => {
     const rail = railRef.current;
-    if (!rail) return;
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const centers = centersRef.current;
-        if (!centers.length) return;
-        const currentMid = rail.scrollLeft + rail.clientWidth / 2;
-        let best = 0;
-        let bestDist = Number.POSITIVE_INFINITY;
-        centers.forEach((center, i) => {
-          const d = Math.abs(center - currentMid);
-          if (d < bestDist) {
-            bestDist = d;
-            best = i;
-          }
-        });
-        if (activeRef.current !== best) {
-          activeRef.current = best;
-          setActive(best);
-        }
-
-        // Looping: jump by one block when near the ends
-        if (stepRef.current > 0 && items.length > 0) {
-          const blockSize = stepRef.current * items.length;
-          const minX = blockSize * 0.5;
-          const maxX = stepRef.current * (items.length * (LOOP - 0.5));
-          if (rail.scrollLeft < minX) {
-            rail.scrollLeft += blockSize;
-          } else if (rail.scrollLeft > maxX) {
-            rail.scrollLeft -= blockSize;
-          }
-        }
-
-        setIsScrolling(true);
-        if (scrollSettleRef.current) {
-          window.clearTimeout(scrollSettleRef.current);
-        }
-        scrollSettleRef.current = window.setTimeout(() => {
-          setIsScrolling(false);
-          scrollSettleRef.current = null;
-        }, 110);
-      });
-    };
-    rail.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      rail.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-      if (scrollSettleRef.current) {
-        window.clearTimeout(scrollSettleRef.current);
-        scrollSettleRef.current = null;
-      }
-    };
-  }, [items.length]);
-
-  // Scroll is trackpad/mouse/touch only; arrows removed per design
-
-  if (!items.length) return null;
-
-  function centerAndFlip(i: number) {
-    const rail = railRef.current;
-    if (!rail) return;
-    const center = centersRef.current[i];
-    if (center === undefined) return;
+    const center = centersRef.current[index];
+    if (!rail || center === undefined) return;
+    if (flipTimer.current) clearTimeout(flipTimer.current);
     const target = center - rail.clientWidth / 2;
-    const alreadyCentered = Math.abs(rail.scrollLeft - target) < 2;
-    if (!alreadyCentered) {
-      rail.scrollTo({ left: target, behavior: "smooth" });
-      // Slight delay before flipping if it wasn't centered
-      window.setTimeout(() => setFlipped((prev) => (prev === i ? null : i)), 320);
+    if (Math.abs(rail.scrollLeft - target) < 2) {
+      setFlipped((previous) => previous === index ? null : index);
     } else {
-      // Flip immediately if already centered
-      setFlipped((prev) => (prev === i ? null : i));
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      rail.scrollTo({ left: target, behavior: reduced ? "instant" : "smooth" });
+      flipTimer.current = setTimeout(() => {
+        // A later user gesture can cancel centering, so do not flip a different card.
+        const actualCenter = centersRef.current[index];
+        if (actualCenter !== undefined && Math.abs(rail.scrollLeft + rail.clientWidth / 2 - actualCenter) < 4) {
+          setFlipped((previous) => previous === index ? null : index);
+        }
+      }, reduced ? 0 : 450);
     }
-  }
+  }, []);
 
-  function handlePlay(index: number) {
-    const item = items[index];
+  const handlePlay = useCallback((index: number) => {
+    const item = items[index % items.length];
     if (!item?.audioSrc) return;
     const queueIndex = audioQueue.findIndex((track) => track.id === item.id);
-    if (queueIndex === -1) return;
-    const activeId = audio.queue[audio.index]?.id;
-    const queuesMatch = audio.queue.length === audioQueue.length && audio.queue.every((track, idx) => track.id === audioQueue[idx].id);
-    if (queuesMatch && activeId === item.id) {
-      if (audio.playing) {
-        audio.pause();
-      } else {
-        audio.play();
-      }
-      return;
-    }
-    audio.setQueue(audioQueue, Math.max(queueIndex, 0), { autoplay: true });
-  }
+    if (queueIndex < 0) return;
+    if (audio.queue[audio.index]?.id === item.id) {
+      if (audio.playing) audio.pause();
+      else audio.play();
+    } else audio.setQueue(audioQueue, queueIndex, { autoplay: true });
+  }, [audio, audioQueue, items]);
+
+  if (!items.length) return null;
 
   return (
     <div ref={containerRef} className="mx-auto w-[min(1100px,92vw)] px-3 sm:px-0">
       <div className="flex flex-col gap-2 mb-4">
         <h2 className="text-3xl font-semibold">Music Portfolio</h2>
-        <p className="text-sm text-neutral-400 md:hidden">
-          Swipe sideways to explore singles and live cuts. Tap a card to play a preview.
-        </p>
+        <p className="text-sm text-neutral-400 md:hidden">Swipe sideways to explore singles and live cuts. Tap a card to play a preview.</p>
         <div className="hidden md:flex items-center gap-2 text-sm text-neutral-400">
           <span className="flex items-center gap-1">
             <span className="h-1 w-6 rounded-full bg-white/20 animate-pulse" aria-hidden />
@@ -271,183 +185,17 @@ export default function SongWheel({ items }: { items: SongItem[] }) {
           </span>
         </div>
       </div>
-
       <div
         ref={railRef}
-        className="relative mx-auto w-full max-w-[min(1024px,95vw)] flex gap-5 md:gap-4 overflow-x-auto overflow-y-visible py-6 md:py-4 px-1 md:px-0 perspective hide-scroll touch-pan-x overscroll-x-contain snap-x snap-proximity md:snap-none"
+        data-song-rail
+        className="relative mx-auto w-full max-w-[min(1024px,95vw)] flex gap-5 md:gap-4 overflow-x-auto overflow-y-hidden py-6 md:py-5 px-1 md:px-0 hide-scroll touch-pan-x overscroll-x-contain"
+        style={{ perspective: 1200, scrollBehavior: "auto" }}
       >
-        {extended.map((card, i) => {
-          const isActive = i === active;
-          const isHovered = canHover && hovered === i;
-          const shouldAnimateCard = !isScrolling || isHovered || flipped === i;
-          const scale = isMobile
-            ? (isActive ? 1.2 : 0.92)
-            : isActive
-              ? (isHovered ? 1.12 : 1.1)
-              : (isHovered ? 0.965 : 0.92);
-          const translateY = !isMobile && isHovered ? -4 : 0;
-          const baseIndex = i % items.length;
-          const baseItem = items[baseIndex];
-          const playable = Boolean(baseItem?.audioSrc);
-          const formattedDate = formatDate(card.date);
-          return (
-            <div
-              key={`${card.id}-${i}`}
-              className="snap-center snap-always shrink-0 w-[180px] h-[180px] md:w-[200px] md:h-[200px] lg:w-[240px] lg:h-[240px]"
-              onMouseEnter={() => {
-                if (!canHover) return;
-                setHovered(i);
-              }}
-              onMouseLeave={() => {
-                if (!canHover) return;
-                setHovered((prev) => (prev === i ? null : prev));
-              }}
-            >
-              <div
-                className={`relative h-full w-full rounded-2xl overflow-hidden border transform-gpu [will-change:transform] [transform-style:preserve-3d] ${
-                  isActive
-                    ? "border-white/22 shadow-[0_18px_45px_rgba(0,0,0,0.38)]"
-                    : isHovered
-                      ? "border-white/20 shadow-[0_16px_38px_rgba(0,0,0,0.34)]"
-                      : "border-white/10 shadow-soft"
-                } ${flipped === i ? 'is-flipped' : ''}`}
-                data-scrolling={shouldAnimateCard ? "false" : "true"}
-                style={{ transform: `translateY(${translateY}px) scale(${scale})`, transformOrigin: "center center" }}
-              >
-                {/* Front */}
-                <button
-                  type="button"
-                  onClick={() => centerAndFlip(i)}
-                  className="absolute inset-0 front face focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
-                  aria-label={`Open ${card.title}`}
-                  aria-pressed={flipped === i}
-                  tabIndex={flipped === i ? -1 : 0}
-                >
-                  <Image
-                    src={card.cover}
-                    alt={card.title}
-                    fill
-                    sizes="(min-width:1024px) 240px, (min-width:768px) 200px, 160px"
-                    className={`object-cover transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                      isHovered ? "brightness-[1.03] saturate-[1.03]" : "brightness-[0.97]"
-                    }`}
-                    loading="lazy"
-                    quality={72}
-                  />
-                  <div
-                    className="absolute left-2 bottom-2 right-2 pointer-events-none text-left drop-shadow-[0_1px_6px_rgba(0,0,0,0.75)]"
-                  >
-                    <div className={`text-sm font-semibold leading-tight truncate transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                      isHovered ? "text-[#fff3d6]" : "text-white"
-                    }`}>{card.title}</div>
-                    {card.artist && <div className="text-white/90 text-xs truncate">{card.artist}</div>}
-                  </div>
-                </button>
-                {/* Back */}
-                <div className="absolute inset-0 back face bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200 text-neutral-900 border border-black/10 p-4 flex flex-col">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="text-[10px] uppercase tracking-[0.35em] text-neutral-400">Track</div>
-                      <div className="text-lg font-semibold leading-tight line-clamp-2">{card.title}</div>
-                      {card.artist && <div className="text-sm text-neutral-500 line-clamp-1">{card.artist}</div>}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handlePlay(baseIndex);
-                      }}
-                      disabled={!playable}
-                      className={`h-10 w-10 rounded-full border flex items-center justify-center transition ${
-                        playable
-                          ? "border-neutral-900 bg-neutral-900 text-white hover:bg-black"
-                          : "border-neutral-300 bg-neutral-200 text-neutral-400 cursor-not-allowed"
-                      }`}
-                      aria-label={playable ? `Play ${card.title}` : `Preview unavailable for ${card.title}`}
-                      tabIndex={flipped === i ? 0 : -1}
-                    >
-                      <Play className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="mt-4 space-y-3 text-xs text-neutral-600">
-                    {card.release && (
-                      <div className="flex items-center gap-2">
-                        <Music2 className="h-3.5 w-3.5 text-neutral-500" />
-                        <span className="font-medium text-neutral-700 line-clamp-1">{card.release}</span>
-                      </div>
-                    )}
-                    {formattedDate && (
-                      <div className="flex items-center gap-2">
-                        <CalendarDays className="h-3.5 w-3.5 text-neutral-500" />
-                        <span>{formattedDate}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <Headphones className="h-3.5 w-3.5 text-neutral-500" />
-                      <span>{playable ? "Preview ready" : "Preview unavailable"}</span>
-                    </div>
-                  </div>
-                  <div className="mt-auto pt-4 flex flex-wrap gap-2">
-                    {card.platforms?.apple && (
-                      <a
-                        className="px-2.5 py-1.5 rounded-lg bg-neutral-900 text-white text-[11px] font-medium tracking-wide uppercase"
-                        href={card.platforms.apple}
-                        target="_blank"
-                        rel="noreferrer"
-                        tabIndex={flipped === i ? 0 : -1}
-                      >
-                        Apple Music
-                      </a>
-                    )}
-                    {card.platforms?.spotify && (
-                      <a
-                        className="px-2.5 py-1.5 rounded-lg bg-neutral-700 text-white text-[11px] font-medium tracking-wide uppercase"
-                        href={card.platforms.spotify}
-                        target="_blank"
-                        rel="noreferrer"
-                        tabIndex={flipped === i ? 0 : -1}
-                      >
-                        Spotify
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {extended.map((card, index) => (
+          <SongWheelCard key={`${card.id}-${index}`} card={card} index={index} active={active === index} flipped={flipped === index} onOpen={centerAndFlip} onPlay={handlePlay} />
+        ))}
       </div>
       <style jsx>{`
-        .perspective { perspective: 1200px; }
-        [data-scrolling="false"] {
-          transition:
-            transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
-            border-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        [data-scrolling="true"] {
-          transition:
-            border-color 180ms ease-out,
-            box-shadow 180ms ease-out;
-        }
-        .front { transform: rotateY(0deg); }
-        .back { transform: rotateY(180deg); }
-        .face {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-          transform-style: preserve-3d;
-          transition: transform 0.6s cubic-bezier(.4,.2,.2,1);
-        }
-        .front { pointer-events: auto; }
-        .back { pointer-events: none; }
-        .is-flipped .front {
-          transform: rotateY(180deg);
-          pointer-events: none;
-        }
-        .is-flipped .back {
-          transform: rotateY(0deg);
-          pointer-events: auto;
-        }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .hide-scroll::-webkit-scrollbar { display: none; }
       `}</style>

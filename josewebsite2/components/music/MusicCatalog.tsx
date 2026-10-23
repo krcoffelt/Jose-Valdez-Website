@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { CalendarDays, Clock3, Music2, Play, Pause, Headphones, ExternalLink } from "lucide-react";
 import { useAudio } from "@/components/audio/AudioProvider";
 import type { AudioTrack } from "@/components/audio/AudioProvider";
@@ -40,6 +40,11 @@ function queuesMatch(current: AudioTrack[], next: AudioTrack[]) {
 
 export default function MusicCatalog({ releases }: { releases: MusicCatalogRelease[] }) {
   const audio = useAudio();
+  const { setDockVisible } = audio;
+  useEffect(() => {
+    setDockVisible(true);
+    return () => setDockVisible(false);
+  }, [setDockVisible]);
 
   const { queue, sections } = useMemo(() => {
     const q: AudioTrack[] = [];

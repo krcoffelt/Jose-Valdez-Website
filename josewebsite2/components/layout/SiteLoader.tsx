@@ -5,56 +5,38 @@ import LoaderScreen from "@/components/layout/LoaderScreen";
 import useSmoothProgress from "@/components/layout/useSmoothProgress";
 
 export default function SiteLoader() {
-  const [loadReady, setLoadReady] = useState(false);
-  const [minDelayDone, setMinDelayDone] = useState(false);
-  const [targetProgress, setTargetProgress] = useState(0);
+  const [ready, setReady] = useState(false);
   const [phase, setPhase] = useState<"visible" | "collapsing" | "hidden">("visible");
-  const progress = useSmoothProgress(targetProgress);
+  const progress = useSmoothProgress(ready ? 100 : 90);
 
   useEffect(() => {
-    const minDelayId = window.setTimeout(() => setMinDelayDone(true), 850);
-    const markReady = () => setLoadReady(true);
-
-    if (document.readyState === "complete") {
-      markReady();
-    } else {
-      window.addEventListener("load", markReady, { once: true });
-    }
-
+    let cancelled = false;
+    let minimumTimer = 0;
+    const deadline = window.setTimeout(() => setReady(true), 3500);
+    const minimum = new Promise<void>((resolve) => {
+      minimumTimer = window.setTimeout(resolve, 100);
+    });
+    const images = Array.from(document.querySelectorAll<HTMLImageElement>('img[fetchpriority="high"]'));
+    // Wait only for first-screen artwork, not third-party embeds below it.
+    void Promise.all([minimum, ...images.map((image) => image.decode().catch(() => {}))]).then(() => {
+      if (!cancelled) setReady(true);
+    });
     return () => {
-      window.clearTimeout(minDelayId);
-      window.removeEventListener("load", markReady);
+      cancelled = true;
+      window.clearTimeout(minimumTimer);
+      window.clearTimeout(deadline);
     };
   }, []);
 
   useEffect(() => {
-    if (phase === "hidden") return;
-
-    const intervalId = window.setInterval(() => {
-      setTargetProgress((current) => {
-        const cap = loadReady && minDelayDone ? 100 : 94;
-        if (current >= cap) return current;
-        if (current < 32) return Math.min(current + 5, cap);
-        if (current < 60) return Math.min(current + 3, cap);
-        if (current < 84) return Math.min(current + 2, cap);
-        return Math.min(current + 1, cap);
-      });
-    }, 68);
-
-    return () => window.clearInterval(intervalId);
-  }, [loadReady, minDelayDone, phase]);
+    if (ready && progress === 100) setPhase((current) => current === "visible" ? "collapsing" : current);
+  }, [ready, progress]);
 
   useEffect(() => {
-    if (!loadReady || !minDelayDone || progress < 100 || phase !== "visible") return;
-
-    const collapseId = window.setTimeout(() => setPhase("collapsing"), 120);
-    const hideId = window.setTimeout(() => setPhase("hidden"), 720);
-
-    return () => {
-      window.clearTimeout(collapseId);
-      window.clearTimeout(hideId);
-    };
-  }, [loadReady, minDelayDone, progress, phase]);
+    if (phase !== "collapsing") return;
+    const timeout = window.setTimeout(() => setPhase("hidden"), 350);
+    return () => window.clearTimeout(timeout);
+  }, [phase]);
 
   useEffect(() => {
     document.body.classList.toggle("site-loader-active", phase !== "hidden");
@@ -64,7 +46,12 @@ export default function SiteLoader() {
   if (phase === "hidden") return null;
 
   return (
-    <div className={phase === "collapsing" ? "loader-collapse-out pointer-events-none" : ""}>
+    <div
+      className={phase === "collapsing" ? "loader-collapse-out pointer-events-none" : ""}
+      onAnimationEnd={(event) => {
+        if (event.target === event.currentTarget && phase === "collapsing") setPhase("hidden");
+      }}
+    >
       <LoaderScreen progress={progress} />
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import { SkipBack, SkipForward, Play, Pause, Volume2 } from "lucide-react";
 import type { AudioTrack } from "./types";
@@ -16,14 +16,17 @@ type Ctx = {
   prev: () => void;
   seek: (s: number) => void;
   setVolume: (v: number) => void;
-  time: number;
-  duration: number;
-  volume: number;
+  error: string | null;
   dockVisible: boolean;
   setDockVisible: (v: boolean) => void;
 };
 const AudioCtx = createContext<Ctx | null>(null);
-export const useAudio = () => useContext(AudioCtx)!;
+const AudioProgressCtx = createContext<{ time: number; duration: number; volume: number } | null>(null);
+export function useAudio() {
+  const audio = useContext(AudioCtx);
+  if (!audio) throw new Error("useAudio requires AudioProvider");
+  return audio;
+}
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const el = useRef<HTMLAudioElement>(null);
@@ -34,61 +37,106 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [duration, setDur] = useState(0);
   const [volume, setVol] = useState(0.9);
   const [dockVisible, setDockVisible] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const queueRef = useRef<AudioTrack[]>([]);
+  const indexRef = useRef(-1);
+  const volumeRef = useRef(0.9);
 
   const current = index >= 0 ? queue[index] : undefined;
 
-  const setQueue = (q: AudioTrack[], startAt = 0, options?: { autoplay?: boolean }) => {
+  const startPlayback = useCallback(() => {
+    const media = el.current;
+    if (!media?.getAttribute("src")) return;
+    setError(null);
+    void media.play().catch((cause: unknown) => {
+      if (cause instanceof DOMException && cause.name === "AbortError") return;
+      setP(false);
+      setError("Unable to play this track. Please try again.");
+    });
+  }, []);
+
+  const selectTrack = useCallback((q: AudioTrack[], requested: number, autoplay: boolean) => {
+    const media = el.current;
+    if (!media) return;
+    const nextIndex = q.length ? Math.max(0, Math.min(requested, q.length - 1)) : -1;
+    const track = q[nextIndex];
+    media.pause();
+    queueRef.current = q;
+    indexRef.current = nextIndex;
     setQ(q);
-    setI(startAt);
-    const autoplay = options?.autoplay ?? false;
-    if (autoplay) {
-      setTimeout(() => play(), 0);
-    } else {
-      pause();
-    }
-  };
-  const play = (t?: AudioTrack) => {
-    if (t) {
-      setQ((q) => (index < 0 ? [t] : [...q.slice(0, index + 1), t, ...q.slice(index + 1)]));
-      setI((i) => (i < 0 ? 0 : i + 1));
-    }
-    el.current?.play();
-    setP(true);
-  };
-  const pause = () => {
+    setI(nextIndex);
+    setP(false);
+    setTime(0);
+    setDur(0);
+    setError(null);
+    if (track?.src) media.src = track.src;
+    else media.removeAttribute("src");
+    media.volume = volumeRef.current;
+    media.load();
+    if (autoplay && track?.src) startPlayback();
+  }, [startPlayback]);
+
+  const setQueue = useCallback((q: AudioTrack[], startAt = 0, options?: { autoplay?: boolean }) => {
+    selectTrack(q, startAt, options?.autoplay ?? false);
+  }, [selectTrack]);
+  const play = useCallback((track?: AudioTrack) => {
+    if (track) {
+      const nextQueue = [...queueRef.current];
+      nextQueue.splice(indexRef.current + 1, 0, track);
+      selectTrack(nextQueue, indexRef.current + 1, true);
+    } else startPlayback();
+  }, [selectTrack, startPlayback]);
+  const pause = useCallback(() => {
     el.current?.pause();
     setP(false);
-  };
-  const next = () => setI((i) => Math.min(queue.length - 1, i + 1));
-  const prev = () => setI((i) => Math.max(0, i - 1));
-  const seek = (s: number) => {
-    if (el.current) el.current.currentTime = s;
-  };
-  const setVolume = (v: number) => {
+  }, []);
+  const next = useCallback(() => {
+    if (indexRef.current + 1 < queueRef.current.length) selectTrack(queueRef.current, indexRef.current + 1, true);
+  }, [selectTrack]);
+  const prev = useCallback(() => {
+    if (indexRef.current > 0) selectTrack(queueRef.current, indexRef.current - 1, true);
+  }, [selectTrack]);
+  const seek = useCallback((seconds: number) => {
+    const media = el.current;
+    if (media && Number.isFinite(media.duration)) media.currentTime = Math.max(0, Math.min(seconds, media.duration));
+  }, []);
+  const setVolume = useCallback((v: number) => {
+    volumeRef.current = v;
     setVol(v);
     if (el.current) el.current.volume = v;
-  };
+  }, []);
+  const controls = useMemo(() => ({
+    queue, index, playing, current, setQueue, play, pause, next, prev, seek, setVolume, error, dockVisible, setDockVisible,
+  }), [queue, index, playing, current, setQueue, play, pause, next, prev, seek, setVolume, error, dockVisible]);
+  const progress = useMemo(() => ({ time, duration, volume }), [time, duration, volume]);
 
   return (
-    <AudioCtx.Provider
-      value={{ queue, index, playing, current, setQueue, play, pause, next, prev, seek, setVolume, time, duration, volume, dockVisible, setDockVisible }}
-    >
+    <AudioCtx.Provider value={controls}>
+      <AudioProgressCtx.Provider value={progress}>
       {children}
       <audio
         ref={el}
-        src={current?.src}
         onTimeUpdate={() => setTime(el.current?.currentTime ?? 0)}
-        onLoadedMetadata={() => setDur(el.current?.duration ?? 0)}
-        onEnded={next}
+        onLoadedMetadata={() => {
+          const seconds = el.current?.duration ?? 0;
+          setDur(Number.isFinite(seconds) ? seconds : 0);
+        }}
+        onPlay={() => setP(true)}
+        onPause={() => setP(false)}
+        onEnded={() => { setP(false); next(); }}
+        onError={() => { setP(false); setError("This track is unavailable. Please try another song."); }}
         preload="none"
       />
       <PlayerDock />
+      </AudioProgressCtx.Provider>
     </AudioCtx.Provider>
   );
 }
 
 function PlayerDock() {
-  const a = useAudio();
+  const controls = useAudio();
+  const progress = useContext(AudioProgressCtx)!;
+  const a = { ...controls, ...progress };
   const current = a.current;
   if (!current) return null;
   const visible = a.dockVisible;
@@ -98,9 +146,12 @@ function PlayerDock() {
         visible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-6 pointer-events-none"
       }`}
       aria-hidden={!visible}
+      inert={!visible}
+      role="region"
+      aria-label="Audio player"
     >
       <div className="flex items-center gap-4">
-        <button onClick={a.prev} aria-label="Previous" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
+        <button onClick={a.prev} disabled={a.index <= 0} aria-label="Previous" className="h-9 w-9 shrink-0 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-40">
           <SkipBack className="h-4 w-4 text-white" />
         </button>
         {a.playing ? (
@@ -112,14 +163,14 @@ function PlayerDock() {
             <Play className="h-5 w-5" />
           </button>
         )}
-        <button onClick={a.next} aria-label="Next" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
+        <button onClick={a.next} disabled={a.index >= a.queue.length - 1} aria-label="Next" className="h-9 w-9 shrink-0 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-40">
           <SkipForward className="h-4 w-4 text-white" />
         </button>
         <div className="flex-1">
           <Slider.Root
             className="relative flex h-4 select-none items-center touch-none"
             value={[a.time]}
-            max={a.duration || 0}
+            max={a.duration || 1}
             step={1}
             onValueChange={(v) => a.seek(v[0] ?? 0)}
             aria-label="Seek"
@@ -130,7 +181,7 @@ function PlayerDock() {
             <Slider.Thumb className="block h-3 w-3 rounded-full bg-white shadow outline-none focus:outline-none focus:ring-0" />
           </Slider.Root>
         </div>
-        <div className="flex items-center gap-2 w-[140px]">
+        <div className="hidden sm:flex items-center gap-2 w-[140px]">
           <Volume2 className="h-4 w-4 text-white/80" />
           <Slider.Root
             className="relative flex h-4 select-none items-center touch-none w-full"
@@ -147,6 +198,7 @@ function PlayerDock() {
           </Slider.Root>
         </div>
       </div>
+      {a.error && <p role="alert" className="mt-2 text-sm text-rose-300">{a.error}</p>}
     </div>
   );
 }

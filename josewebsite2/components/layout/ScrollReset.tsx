@@ -8,7 +8,7 @@ function resetScrollPosition() {
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
 
-  document.querySelectorAll<HTMLElement>(".snap-container").forEach((node) => {
+  document.querySelectorAll<HTMLElement>("[data-home-scroll]").forEach((node) => {
     node.scrollTo({ top: 0, left: 0, behavior: "auto" });
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type Ref } from "react";
 import type { SongItem } from "@/components/works/SongWheel";
 
 const SongWheel = dynamic(() => import("@/components/works/SongWheel"), {
@@ -9,9 +9,9 @@ const SongWheel = dynamic(() => import("@/components/works/SongWheel"), {
   loading: () => <SongWheelPlaceholder />,
 });
 
-function SongWheelPlaceholder() {
+function SongWheelPlaceholder({ observeRef }: { observeRef?: Ref<HTMLDivElement> }) {
   return (
-    <div className="mx-auto w-[min(1100px,92vw)] px-3 sm:px-0">
+    <div ref={observeRef} className="mx-auto w-[min(1100px,92vw)] px-3 sm:px-0">
       <div className="flex flex-col gap-2 mb-4">
         <h2 className="text-3xl font-semibold">Music Portfolio</h2>
         <p className="text-sm text-neutral-400 md:hidden">
@@ -42,11 +42,24 @@ function SongWheelPlaceholder() {
 
 export default function SongWheelDeferred({ items }: { items: SongItem[] }) {
   const [shouldRender, setShouldRender] = useState(false);
+  const placeholderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const rafId = window.requestAnimationFrame(() => setShouldRender(true));
-    return () => window.cancelAnimationFrame(rafId);
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldRender(true);
+      return;
+    }
+    const node = placeholderRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) {
+        setShouldRender(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "800px 0px" });
+    observer.observe(node);
+    return () => observer.disconnect();
   }, []);
 
-  return shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder />;
+  return shouldRender ? <SongWheel items={items} /> : <SongWheelPlaceholder observeRef={placeholderRef} />;
 }

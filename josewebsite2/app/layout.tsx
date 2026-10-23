@@ -6,7 +6,7 @@ import SiteLoader from "@/components/layout/SiteLoader";
 import ScrollReset from "@/components/layout/ScrollReset";
 import { AudioProvider } from "@/components/audio/AudioProvider";
 
-const siteUrl = "https://josevaldez.netlify.app";
+const siteUrl = "https://joseisaivaldez.com";
 const shareImagePath = "/images/hero-bg.webp";
 const shareImageUrl = `${siteUrl}${shareImagePath}`;
 

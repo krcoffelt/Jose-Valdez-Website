@@ -4,36 +4,25 @@ import { useEffect, useRef, useState } from "react";
 
 export default function useSmoothProgress(target: number) {
   const [displayed, setDisplayed] = useState(0);
-  const targetRef = useRef(target);
-
-  useEffect(() => {
-    targetRef.current = target;
-  }, [target]);
+  const current = useRef(0);
 
   useEffect(() => {
     let frameId = 0;
-
-    const tick = () => {
-      setDisplayed((current) => {
-        const diff = targetRef.current - current;
-        if (Math.abs(diff) < 0.18) return targetRef.current;
-
-        const step = Math.max(0.18, Math.abs(diff) * 0.14);
-        const next = current + Math.sign(diff) * step;
-
-        if ((diff > 0 && next > targetRef.current) || (diff < 0 && next < targetRef.current)) {
-          return targetRef.current;
-        }
-
-        return next;
-      });
-
-      frameId = window.requestAnimationFrame(tick);
+    let lastTime = performance.now();
+    const tick = (now: number) => {
+      const elapsed = Math.min(now - lastTime, 64);
+      lastTime = now;
+      const difference = target - current.current;
+      current.current = Math.abs(difference) < 0.15
+        ? target
+        : current.current + difference * (1 - Math.exp(-elapsed / 40));
+      setDisplayed(current.current);
+      if (current.current !== target) frameId = requestAnimationFrame(tick);
     };
 
     frameId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frameId);
-  }, []);
+  }, [target]);
 
   return displayed;
 }

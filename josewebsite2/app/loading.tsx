@@ -1,5 +1,5 @@
 import RouteLoader from "@/components/layout/RouteLoader";
 
 export default function Loading() {
-  return <RouteLoader />;
+  return <div className="min-h-[100svh]"><RouteLoader /></div>;
 }
